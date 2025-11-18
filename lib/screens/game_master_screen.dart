@@ -11,17 +11,24 @@ import 'brew_screen.dart';
 import 'potion_list_screen.dart';
 import 'library_hint_screen.dart';
 import 'market_screen.dart';
+import 'market_announcement_screen.dart';
+import 'secret_reveal_screen.dart';
 import 'end_game_screen.dart';
 import 'round_start_screen.dart';
 
 import '../widgets/alchemists_folly_logo.dart';
 import '../widgets/game_overlays.dart'; // pause + scoreboard + circle buttons
 
-class GameMasterScreen extends StatelessWidget {
+class GameMasterScreen extends StatefulWidget {
   static const routeName = '/game-master';
 
   const GameMasterScreen({super.key});
 
+  @override
+  State<GameMasterScreen> createState() => _GameMasterScreenState();
+}
+
+class _GameMasterScreenState extends State<GameMasterScreen> {
   @override
   Widget build(BuildContext context) {
     final game = context.watch<GameState>();
@@ -69,8 +76,7 @@ class GameMasterScreen extends StatelessWidget {
                       height: 54,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color:
-                            const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                        color: const Color(0xFFFFF6E3).withValues(alpha: 0.96),
                         border: Border.all(
                           color: const Color(0xFF351B10),
                           width: 4,
@@ -123,7 +129,7 @@ class GameMasterScreen extends StatelessWidget {
 
                     // POINTS LABEL
                     Text(
-                      'POINTS: ${player.prestige}',
+                      'POINTS: ${player.prestige}${player.stardust > 0 ? ' | STARDUST: ${player.stardust}' : ''}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontFamily: 'Pixel Game',

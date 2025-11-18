@@ -33,6 +33,8 @@ flutter:
     - assets/images/bg_market.png
     - assets/images/bg_secret.png
     - assets/images/potion.png
+    - assets/images/demand-vector.png
+    - assets/images/surplus-vector.png
     # If you have more, add them here:
     # - assets/images/logo.png
     # - assets/images/your_other_bg.png

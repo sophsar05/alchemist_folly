@@ -1,13 +1,12 @@
-// lib/screens/round_start_screen.dart
-import 'dart:async';
 import 'package:flutter/material.dart';
+import '../widgets/background_scaffold.dart';
+import '../widgets/primary_button.dart';
+import 'market_announcement_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/game_state.dart';
-import '../widgets/background_scaffold.dart';
 import '../widgets/game_overlays.dart';
 import '../widgets/alchemists_folly_logo.dart';
-import 'game_master_screen.dart';
 
 class RoundStartScreen extends StatefulWidget {
   static const routeName = '/round-start';
@@ -19,29 +18,6 @@ class RoundStartScreen extends StatefulWidget {
 }
 
 class _RoundStartScreenState extends State<RoundStartScreen> {
-  static const Duration _displayDuration = Duration(seconds: 2);
-
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _timer = Timer(_displayDuration, () {
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(
-        context,
-        GameMasterScreen.routeName,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final game = context.watch<GameState>();
@@ -118,6 +94,16 @@ class _RoundStartScreenState extends State<RoundStartScreen> {
                   ),
                   const SizedBox(height: 40),
                   const AlchemistsFollyLogo(),
+                  const SizedBox(height: 40),
+                  PrimaryButton(
+                    label: 'Continue',
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(
+                        context,
+                        MarketAnnouncementScreen.routeName,
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

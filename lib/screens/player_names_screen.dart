@@ -66,6 +66,7 @@ class _PlayerNamesScreenState extends State<PlayerNamesScreen> {
                           style: const TextStyle(
                             fontFamily: 'Pixel Game',
                             fontSize: 18,
+                            color: Color(0xFFFFDB8D),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -74,6 +75,7 @@ class _PlayerNamesScreenState extends State<PlayerNamesScreen> {
                           style: const TextStyle(
                             fontFamily: 'Pixel Game',
                             fontSize: 18,
+                            color: Colors.black,
                           ),
                           decoration: InputDecoration(
                             filled: true,

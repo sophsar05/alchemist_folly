@@ -74,9 +74,7 @@ class GameState extends ChangeNotifier {
     _players
       ..clear()
       ..addAll(
-        names
-            .where((n) => n.trim().isNotEmpty)
-            .map(
+        names.where((n) => n.trim().isNotEmpty).map(
               (n) => Player(
                 id: n.trim().toLowerCase().replaceAll(' ', '_'),
                 name: n.trim(),
@@ -91,17 +89,16 @@ class GameState extends ChangeNotifier {
     // Pick a secret potion from the allowed candidates.
     _secretPotion = pickRandomSecretPotion(_random);
     if (kDebugMode && _secretPotion != null) {
-  debugPrint('🧪 SECRET POTION SELECTED: ${_secretPotion!.name}');
-  debugPrint('   Recipe: '
-      'Herb=${_secretPotion!.herbId}, '
-      'Mineral=${_secretPotion!.mineralId}, '
-      'Creature=${_secretPotion!.creatureId}, '
-      'Essence=${_secretPotion!.essenceId}');
-  if (_secretPotion!.hint != null) {
-    debugPrint('   Hint: ${_secretPotion!.hint}');
-  }
-}
-
+      debugPrint('🧪 SECRET POTION SELECTED: ${_secretPotion!.name}');
+      debugPrint('   Recipe: '
+          'Herb=${_secretPotion!.herbId}, '
+          'Mineral=${_secretPotion!.mineralId}, '
+          'Creature=${_secretPotion!.creatureId}, '
+          'Essence=${_secretPotion!.essenceId}');
+      if (_secretPotion!.hint != null) {
+        debugPrint('   Hint: ${_secretPotion!.hint}');
+      }
+    }
 
     _rollMarketEvent();
     notifyListeners();
@@ -161,54 +158,53 @@ class GameState extends ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   /// Advances to the next player's turn.
-/// Returns `true` if this call started a NEW ROUND.
-bool nextTurn() {
-  final oldRound = currentRound;
+  /// Returns `true` if this call started a NEW ROUND.
+  bool nextTurn() {
+    final oldRound = currentRound;
 
-  // --- your existing "advance turn" logic below ---
-  // This part assumes you already have:
-  //   - players
-  //   - currentPlayerIndex
-  //   - currentRound
-  //   - maxRounds
-  //   - isGameOver flag, etc.
+    // --- your existing "advance turn" logic below ---
+    // This part assumes you already have:
+    //   - players
+    //   - currentPlayerIndex
+    //   - currentRound
+    //   - maxRounds
+    //   - isGameOver flag, etc.
 
-  if (players.isEmpty) {
-    return false;
+    if (players.isEmpty) {
+      return false;
+    }
+
+    // move to next player
+    _currentPlayerIndex++;
+
+    // wrap around player index
+    if (_currentPlayerIndex >= players.length) {
+      _currentPlayerIndex = 0;
+      _currentRound++;
+
+      // if you have per-round setup (new AP, new market event, etc),
+      // make sure you call it here:
+      _startNewRoundIfNeeded();
+    }
+
+    // check for game over condition
+    if (!isGameOver) {
+      _rollMarketEvent();
+    }
+
+    notifyListeners();
+
+    final startedNewRound = currentRound != oldRound;
+    return startedNewRound;
   }
 
-  // move to next player
-  _currentPlayerIndex++;
-
-  // wrap around player index
-  if (_currentPlayerIndex >= players.length) {
-    _currentPlayerIndex = 0;
-    _currentRound++;
-
-    // if you have per-round setup (new AP, new market event, etc),
-    // make sure you call it here:
-    _startNewRoundIfNeeded();
+  /// Optional helper if you already had round setup logic somewhere.
+  /// If you don't use it, just inline and delete this.
+  void _startNewRoundIfNeeded() {
+    // example:
+    // currentAP = baseAPPerRound;
+    // rollMarketConditionForRound();
   }
-
-  // check for game over condition
-  if (!isGameOver) {
-        _rollMarketEvent();
-      }
-
-  notifyListeners();
-
-  final startedNewRound = currentRound != oldRound;
-  return startedNewRound;
-}
-
-/// Optional helper if you already had round setup logic somewhere.
-/// If you don't use it, just inline and delete this.
-void _startNewRoundIfNeeded() {
-  // example:
-  // currentAP = baseAPPerRound;
-  // rollMarketConditionForRound();
-}
-
 
   // ---------------------------------------------------------------------------
   // BREWING
@@ -249,12 +245,30 @@ void _startNewRoundIfNeeded() {
       );
     }
 
+    // Check Stardust availability if trying to use it
+    if (useStardust && currentPlayer.stardust < 1) {
+      return const BrewResult(
+        success: false,
+        message: 'Not enough Stardust. You need 1 Stardust to attempt a secret potion.',
+        potion: null,
+        basePoints: 0,
+        bonusPoints: 0,
+        totalPoints: 0,
+        isSecretPotion: false,
+        triggeredFolly: false,
+        apSpent: 0,
+      );
+    }
+
     final herb = ingredientByName(herbName);
     final mineral = ingredientByName(mineralName);
     final creature = ingredientByName(creatureName);
     final essence = ingredientByName(essenceName);
 
-    if (herb == null || mineral == null || creature == null || essence == null) {
+    if (herb == null ||
+        mineral == null ||
+        creature == null ||
+        essence == null) {
       return const BrewResult(
         success: false,
         message: 'Choose one ingredient from each category before brewing.',
@@ -268,7 +282,7 @@ void _startNewRoundIfNeeded() {
       );
     }
 
-    final potion = findPotionMatch(
+    var potion = findPotionMatch(
       herbId: herb.id,
       mineralId: mineral.id,
       creatureId: creature.id,
@@ -307,17 +321,47 @@ void _startNewRoundIfNeeded() {
       }
 
       // Secret potion bonus
-    if (_secretPotion != null && potion.id == _secretPotion!.id) {
-      isSecret = true;
-      bonus += 3;
-      currentPlayer.discoveredSecretPotion = true;
+      if (_secretPotion != null && potion.id == _secretPotion!.id) {
+        isSecret = true;
+        bonus += 3;
+        currentPlayer.discoveredSecretPotion = true;
 
-      if (kDebugMode) {
-        debugPrint(
-          '🎉 SECRET POTION DISCOVERED by ${currentPlayer.name}: ${potion.name}',
-        );
+        if (kDebugMode) {
+          debugPrint(
+            '🎉 SECRET POTION DISCOVERED by ${currentPlayer.name}: ${potion.name}',
+          );
+        }
       }
-    }
+
+      // Stardust secret potion attempt (even if recipe doesn't match exactly)
+      if (useStardust && !isSecret && _secretPotion != null) {
+        // Count matching ingredients
+        int matches = 0;
+        if (herb.id == _secretPotion!.herbId) matches++;
+        if (mineral.id == _secretPotion!.mineralId) matches++;
+        if (creature.id == _secretPotion!.creatureId) matches++;
+        if (essence.id == _secretPotion!.essenceId) matches++;
+
+        // If 3 out of 4 ingredients match, they discover the secret potion!
+        if (matches >= 3) {
+          // Override the normal potion with the secret potion
+          potion = _secretPotion;
+          base = _secretPotion!.points;
+          isSecret = true;
+          bonus += 3; // Secret potion bonus
+          currentPlayer.discoveredSecretPotion = true;
+          message = 'The Stardust guides your hand! You brewed the secret ${potion!.name}!';
+
+          // Mark secret potion as brewed
+          brewedPotionIds.add(potion.id);
+
+          if (kDebugMode) {
+            debugPrint(
+              '✨ STARDUST SECRET DISCOVERY by ${currentPlayer.name}: ${potion.name} with $matches/4 matches',
+            );
+          }
+        }
+      }
 
       // Don’t go below 0 total PP for a successful potion
       if (base + bonus < 0) {
@@ -355,6 +399,9 @@ void _startNewRoundIfNeeded() {
     }
 
     _currentAP -= 2;
+    if (useStardust) {
+      player.stardust -= 1;
+    }
     notifyListeners();
 
     return BrewResult(
@@ -368,5 +415,68 @@ void _startNewRoundIfNeeded() {
       triggeredFolly: follyPenalty,
       apSpent: 2,
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // SHOPPING
+  // ---------------------------------------------------------------------------
+
+  bool canShop() {
+    return _currentAP >= 1 && _players.isNotEmpty;
+  }
+
+  String? shopForGoods(Map<String, int> selectedIngredients) {
+    if (!canShop()) {
+      return 'Not enough AP. You need 1 AP to shop.';
+    }
+
+    int totalCost = 0;
+    for (final count in selectedIngredients.values) {
+      totalCost += count * 2; // Each ingredient costs 2 PP
+    }
+
+    if (currentPlayer.prestige < totalCost) {
+      return 'Not enough PP. You need $totalCost PP to buy these ingredients.';
+    }
+
+    // Deduct AP and PP
+    _currentAP -= 1;
+    currentPlayer.prestige -= totalCost;
+    notifyListeners();
+
+    return null; // No error, purchase successful
+  }
+
+  // ---------------------------------------------------------------------------
+  // BLACK MARKET (Stardust Trading)
+  // ---------------------------------------------------------------------------
+
+  bool canTradeForStardust() {
+    return _currentAP >= 1 && _players.isNotEmpty;
+  }
+
+  String? tradeForStardust(Map<String, int> ingredientsToTrade) {
+    if (!canTradeForStardust()) {
+      return 'Not enough AP. You need 1 AP to trade at the Black Market.';
+    }
+
+    int totalIngredients = 0;
+    for (final count in ingredientsToTrade.values) {
+      totalIngredients += count;
+    }
+
+    if (totalIngredients == 0) {
+      return 'Select at least one ingredient to trade.';
+    }
+
+    // Convert ingredients to Stardust (1 ingredient = 1 Stardust)
+    int stardustGained = totalIngredients;
+
+    // Deduct AP and award Stardust
+    _currentAP -= 1;
+    currentPlayer.stardust += stardustGained;
+    notifyListeners();
+
+    return null; // No error, trade successful
   }
 }

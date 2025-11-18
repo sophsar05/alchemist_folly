@@ -64,8 +64,7 @@ class MarketEvent {
   static const calm = MarketEvent(
     type: MarketEventType.calm,
     title: 'The Market is Calm',
-    description:
-        'No special changes this round. Brew as usual, apprentices.',
+    description: 'No special changes this round. Brew as usual, apprentices.',
   );
 }
 
@@ -74,13 +73,15 @@ class Player {
   final String name;
   int prestige;
   int potionsBrewed;
+  int stardust;
   bool discoveredSecretPotion;
 
   Player({
     required this.id,
     required this.name,
-    this.prestige = 0,
+    this.prestige = 4,
     this.potionsBrewed = 0,
+    this.stardust = 0,
     this.discoveredSecretPotion = false,
   });
 }

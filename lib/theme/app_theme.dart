@@ -10,19 +10,19 @@ class AppTheme {
         fontSize: 32,
         height: 0.9,
         letterSpacing: -1.5,
-        color: Colors.black,
+        color: Color(0x00000000),
       ),
       titleLarge: TextStyle(
         fontFamily: 'Pixel Game',
         fontSize: 24,
         height: 0.9,
-        color: Colors.black,
+        color: Color(0x00000000),
       ),
       bodyLarge: TextStyle(
         fontFamily: 'Pixel Game',
         fontSize: 18,
         height: 1.0,
-        color: Colors.black,
+        color: Color(0x00000000),
       ),
     ),
   );

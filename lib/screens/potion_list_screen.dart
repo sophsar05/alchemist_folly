@@ -128,8 +128,7 @@ class PotionListScreen extends StatelessWidget {
                                   const SizedBox(height: 10),
                               itemBuilder: (context, index) {
                                 final potion = kPotions[index];
-                                final isBrewed =
-                                    brewedIds.contains(potion.id);
+                                final isBrewed = brewedIds.contains(potion.id);
 
                                 return _PotionCard(
                                   potion: potion,
@@ -182,17 +181,14 @@ class _PotionCard extends StatelessWidget {
     final creature = ingredientById(potion.creatureId);
     final essence = ingredientById(potion.essenceId);
 
-    final baseTextColor = isBrewed
-        ? const Color(0xFFA7A7A7)
-        : const Color(0xFF351B10);
+    final baseTextColor =
+        isBrewed ? const Color(0xFFA7A7A7) : const Color(0xFF351B10);
 
-    final borderColor = isBrewed
-        ? const Color(0xFFCCCCCC)
-        : const Color(0xFFFFDB8D);
+    final borderColor =
+        isBrewed ? const Color(0xFFCCCCCC) : const Color(0xFFFFDB8D);
 
-    final ppColor = isBrewed
-        ? const Color(0xFFA7A7A7)
-        : const Color(0xFFFE7305);
+    final ppColor =
+        isBrewed ? const Color(0xFFA7A7A7) : const Color(0xFFFE7305);
 
     return Container(
       height: 72, // tighter like your Figma card height
@@ -317,9 +313,8 @@ class _PotionCard extends StatelessWidget {
               height: 1.0,
               letterSpacing: -0.01,
               color: ppColor,
-              decoration: isBrewed
-                  ? TextDecoration.lineThrough
-                  : TextDecoration.none,
+              decoration:
+                  isBrewed ? TextDecoration.lineThrough : TextDecoration.none,
             ),
           ),
         ],

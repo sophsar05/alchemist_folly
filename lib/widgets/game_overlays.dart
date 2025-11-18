@@ -196,13 +196,27 @@ void showScoreboardDialog(BuildContext context) {
                         ),
                       ),
                       const Spacer(),
-                      Text(
-                        '${players[i].prestige}',
-                        style: const TextStyle(
-                          fontFamily: 'JMH Cthulhumbus Arcade',
-                          fontSize: 22,
-                          color: Color(0xFF351B10),
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${players[i].prestige} PP',
+                            style: const TextStyle(
+                              fontFamily: 'JMH Cthulhumbus Arcade',
+                              fontSize: 20,
+                              color: Color(0xFF351B10),
+                            ),
+                          ),
+                          if (players[i].stardust > 0)
+                            Text(
+                              '${players[i].stardust} ✦',
+                              style: const TextStyle(
+                                fontFamily: 'JMH Cthulhumbus Arcade',
+                                fontSize: 16,
+                                color: Color(0xFFFFC037),
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
