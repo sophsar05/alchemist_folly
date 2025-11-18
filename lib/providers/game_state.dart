@@ -1,5 +1,9 @@
+// lib/providers/game_state.dart
+
 import 'dart:math';
+
 import 'package:flutter/foundation.dart';
+
 import '../game_logic/game_models.dart';
 
 class GameState extends ChangeNotifier {
@@ -16,19 +20,44 @@ class GameState extends ChangeNotifier {
   Potion? _secretPotion;
   MarketEvent _currentMarketEvent = MarketEvent.calm;
 
+  /// IDs of potions that have been successfully brewed at least once.
+  /// Used by the Potion List screen to gray out & strike-through.
+  final Set<String> brewedPotionIds = {};
+
+  // ---------------------------------------------------------------------------
+  // GETTERS
+  // ---------------------------------------------------------------------------
+
   List<Player> get players => List.unmodifiable(_players);
   int get currentRound => _currentRound;
   int get currentAP => _currentAP;
-  Player get currentPlayer => _players[_currentPlayerIndex];
+
+  Player get currentPlayer {
+    if (_players.isEmpty) {
+      // Fallback dummy player to avoid crashes, but in practice
+      // you should always set players before starting a round.
+      return Player(id: 'none', name: 'No Players');
+    }
+    return _players[_currentPlayerIndex];
+  }
+
   MarketEvent get currentMarketEvent => _currentMarketEvent;
   Potion? get secretPotion => _secretPotion;
 
   bool get isGameOver => _currentRound > maxRounds;
 
+  /// Standings sorted by highest prestige first.
+  List<Player> get standings {
+    final copy = List<Player>.from(_players);
+    copy.sort((a, b) => b.prestige.compareTo(a.prestige));
+    return copy;
+  }
+
   // ---------------------------------------------------------------------------
   // SETUP
   // ---------------------------------------------------------------------------
 
+  /// Clears all game data.
   void reset() {
     _players.clear();
     _currentPlayerIndex = 0;
@@ -36,30 +65,50 @@ class GameState extends ChangeNotifier {
     _currentAP = apPerTurn;
     _secretPotion = null;
     _currentMarketEvent = MarketEvent.calm;
+    brewedPotionIds.clear();
     notifyListeners();
   }
 
+  /// Initializes players and starts a new game.
   void setPlayerNames(List<String> names) {
     _players
       ..clear()
       ..addAll(
-        names.map(
-          (n) => Player(
-            id: n.trim().toLowerCase().replaceAll(' ', '_'),
-            name: n.trim(),
-          ),
-        ),
+        names
+            .where((n) => n.trim().isNotEmpty)
+            .map(
+              (n) => Player(
+                id: n.trim().toLowerCase().replaceAll(' ', '_'),
+                name: n.trim(),
+              ),
+            ),
       );
+
     _currentPlayerIndex = 0;
     _currentRound = 1;
     _currentAP = apPerTurn;
+
+    // Pick a secret potion from the allowed candidates.
     _secretPotion = pickRandomSecretPotion(_random);
+    if (kDebugMode && _secretPotion != null) {
+  debugPrint('🧪 SECRET POTION SELECTED: ${_secretPotion!.name}');
+  debugPrint('   Recipe: '
+      'Herb=${_secretPotion!.herbId}, '
+      'Mineral=${_secretPotion!.mineralId}, '
+      'Creature=${_secretPotion!.creatureId}, '
+      'Essence=${_secretPotion!.essenceId}');
+  if (_secretPotion!.hint != null) {
+    debugPrint('   Hint: ${_secretPotion!.hint}');
+  }
+}
+
+
     _rollMarketEvent();
     notifyListeners();
   }
 
   // ---------------------------------------------------------------------------
-  // TURN / ROUND FLOW
+  // MARKET EVENTS
   // ---------------------------------------------------------------------------
 
   void _rollMarketEvent() {
@@ -71,7 +120,6 @@ class GameState extends ChangeNotifier {
       return;
     }
 
-    // pick a random ingredient
     final ingredient = kIngredients[_random.nextInt(kIngredients.length)];
 
     switch (roll) {
@@ -90,7 +138,7 @@ class GameState extends ChangeNotifier {
           type: MarketEventType.surplus,
           title: 'Surplus: ${ingredient.name}',
           description:
-              '${ingredient.name} is flooding the market. Potions using it lose 1 PP (min 0).',
+              '${ingredient.name} is flooding the market. Potions using it lose 1 PP (minimum 0).',
           ingredientId: ingredient.id,
           bonusOrPenalty: -1,
         );
@@ -108,20 +156,59 @@ class GameState extends ChangeNotifier {
     }
   }
 
-  void nextTurn() {
-    if (_players.isEmpty) return;
+  // ---------------------------------------------------------------------------
+  // TURN / ROUND FLOW
+  // ---------------------------------------------------------------------------
 
-    _currentPlayerIndex++;
-    if (_currentPlayerIndex >= _players.length) {
-      _currentPlayerIndex = 0;
-      _currentRound++;
-      if (!isGameOver) {
+  /// Advances to the next player's turn.
+/// Returns `true` if this call started a NEW ROUND.
+bool nextTurn() {
+  final oldRound = currentRound;
+
+  // --- your existing "advance turn" logic below ---
+  // This part assumes you already have:
+  //   - players
+  //   - currentPlayerIndex
+  //   - currentRound
+  //   - maxRounds
+  //   - isGameOver flag, etc.
+
+  if (players.isEmpty) {
+    return false;
+  }
+
+  // move to next player
+  _currentPlayerIndex++;
+
+  // wrap around player index
+  if (_currentPlayerIndex >= players.length) {
+    _currentPlayerIndex = 0;
+    _currentRound++;
+
+    // if you have per-round setup (new AP, new market event, etc),
+    // make sure you call it here:
+    _startNewRoundIfNeeded();
+  }
+
+  // check for game over condition
+  if (!isGameOver) {
         _rollMarketEvent();
       }
-    }
-    _currentAP = apPerTurn;
-    notifyListeners();
-  }
+
+  notifyListeners();
+
+  final startedNewRound = currentRound != oldRound;
+  return startedNewRound;
+}
+
+/// Optional helper if you already had round setup logic somewhere.
+/// If you don't use it, just inline and delete this.
+void _startNewRoundIfNeeded() {
+  // example:
+  // currentAP = baseAPPerRound;
+  // rollMarketConditionForRound();
+}
+
 
   // ---------------------------------------------------------------------------
   // BREWING
@@ -220,15 +307,25 @@ class GameState extends ChangeNotifier {
       }
 
       // Secret potion bonus
-      if (_secretPotion != null && potion.id == _secretPotion!.id) {
-        isSecret = true;
-        bonus += 3;
-        currentPlayer.discoveredSecretPotion = true;
+    if (_secretPotion != null && potion.id == _secretPotion!.id) {
+      isSecret = true;
+      bonus += 3;
+      currentPlayer.discoveredSecretPotion = true;
+
+      if (kDebugMode) {
+        debugPrint(
+          '🎉 SECRET POTION DISCOVERED by ${currentPlayer.name}: ${potion.name}',
+        );
+      }
+    }
+
+      // Don’t go below 0 total PP for a successful potion
+      if (base + bonus < 0) {
+        bonus = -base;
       }
 
-      if (bonus < -base) {
-        bonus = -base; // don’t go below 0 PP
-      }
+      // Mark this potion as brewed for the list screen
+      brewedPotionIds.add(potion.id);
     } else {
       // Mis-brew / Folly
       message =
@@ -250,12 +347,13 @@ class GameState extends ChangeNotifier {
 
     final total = base + bonus;
 
-    // Apply to player
+    // Apply to current player
     final player = currentPlayer;
     player.prestige += total;
     if (potion != null) {
       player.potionsBrewed++;
     }
+
     _currentAP -= 2;
     notifyListeners();
 
@@ -270,15 +368,5 @@ class GameState extends ChangeNotifier {
       triggeredFolly: follyPenalty,
       apSpent: 2,
     );
-  }
-
-  // ---------------------------------------------------------------------------
-  // STANDINGS
-  // ---------------------------------------------------------------------------
-
-  List<Player> get standings {
-    final copy = List<Player>.from(_players);
-    copy.sort((a, b) => b.prestige.compareTo(a.prestige));
-    return copy;
   }
 }

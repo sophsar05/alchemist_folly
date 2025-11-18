@@ -1,14 +1,21 @@
+// lib/screens/game_master_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/game_state.dart';
+
 import '../widgets/background_scaffold.dart';
-import '../widgets/primary_button.dart';
+import '../widgets/primary_button.dart'; // used inside overlays + End Turn button
+import '../providers/game_state.dart';
+
 import 'brew_screen.dart';
 import 'potion_list_screen.dart';
 import 'library_hint_screen.dart';
 import 'market_screen.dart';
-import 'secret_reveal_screen.dart';
 import 'end_game_screen.dart';
+import 'round_start_screen.dart';
+
+import '../widgets/alchemists_folly_logo.dart';
+import '../widgets/game_overlays.dart'; // pause + scoreboard + circle buttons
 
 class GameMasterScreen extends StatelessWidget {
   static const routeName = '/game-master';
@@ -22,157 +29,290 @@ class GameMasterScreen extends StatelessWidget {
 
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_default.png',
-      appBar: AppBar(
-        title: const Text(
-          'Alchemist Folly',
-          style: TextStyle(
-            fontFamily: 'Pixel Game',
-            color: Color(0xFFFFDB8D),
-          ),
-        ),
-        backgroundColor: const Color(0xFF351B10),
-        centerTitle: true,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      child: SafeArea(
+        child: Stack(
           children: [
-            Text(
-              'Round ${game.currentRound}',
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "It's ${player.name}'s turn!",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'AP: ${game.currentAP}   |   PP: ${player.prestige}',
-              style: const TextStyle(
-                fontFamily: 'Pixel Game',
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView(
-                children: [
-                  Text(
-                    'Quick Actions',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      PrimaryButton(
-                        label: 'Brew',
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            BrewScreen.routeName,
-                          );
-                        },
-                      ),
-                      PrimaryButton(
-                        label: 'Potion List',
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            PotionListScreen.routeName,
-                          );
-                        },
-                      ),
-                      PrimaryButton(
-                        label: 'Library (Hints)',
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            LibraryHintScreen.routeName,
-                          );
-                        },
-                      ),
-                      PrimaryButton(
-                        label: 'Market',
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            MarketScreen.routeName,
-                          );
-                        },
-                      ),
-                      PrimaryButton(
-                        label: 'Secret Reveal',
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            SecretRevealScreen.routeName,
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Players Summary',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  ...game.players.map(
-                    (p) => Card(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      child: ListTile(
-                        title: Text(
-                          p.name,
-                          style: const TextStyle(
-                            fontFamily: 'Pixel Game',
+            // MAIN LAYOUT
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 12),
+
+                    // ROUND LABEL
+                    const Text(
+                      'ROUND',
+                      style: TextStyle(
+                        fontFamily: 'Pixel Game',
+                        fontSize: 60,
+                        height: 0.71,
+                        color: Color(0xFFFFF6E3),
+                        letterSpacing: -0.01,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 8.9,
+                            color: Colors.black,
                           ),
-                        ),
-                        subtitle: Text(
-                          'PP: ${p.prestige}   |   Potions brewed: ${p.potionsBrewed}',
-                          style: const TextStyle(
-                            fontFamily: 'Pixel Game',
-                            fontSize: 14,
-                          ),
-                        ),
-                        trailing: p.discoveredSecretPotion
-                            ? const Icon(Icons.star, color: Colors.amber)
-                            : null,
+                        ],
                       ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 6),
+
+                    // ROUND NUMBER CIRCLE
+                    Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                        border: Border.all(
+                          color: const Color(0xFF351B10),
+                          width: 4,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${game.currentRound}',
+                        style: const TextStyle(
+                          fontFamily: 'Pixel Game',
+                          fontSize: 55,
+                          height: 0.71,
+                          color: Color(0xFF983333),
+                          letterSpacing: -0.01,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // PLAYER NAME TURN
+                    Text(
+                      "${player.name.toUpperCase()}'S TURN",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Pixel Game',
+                        fontSize: 32,
+                        height: 0.71,
+                        color: Color(0xFFFFF6E3),
+                        letterSpacing: -0.01,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 8.9,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // UNDERLINE
+                    Container(
+                      width: 190,
+                      height: 4,
+                      color: const Color(0xFF351B10),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // POINTS LABEL
+                    Text(
+                      'POINTS: ${player.prestige}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'Pixel Game',
+                        fontSize: 24,
+                        height: 0.71,
+                        color: Color(0xFFFFF6E3),
+                        letterSpacing: -0.01,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 8.9,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // BIG SCROLL BUTTONS
+                    _MenuScrollButton(
+                      label: 'Potion List',
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          PotionListScreen.routeName,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _MenuScrollButton(
+                      label: 'Brew',
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          BrewScreen.routeName,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _MenuScrollButton(
+                      label: 'Library',
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          LibraryHintScreen.routeName,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _MenuScrollButton(
+                      label: 'Market',
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          MarketScreen.routeName,
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // END TURN / END GAME (smaller scroll-style)
+                    SizedBox(
+                      width: 180,
+                      child: PrimaryButton(
+                        label: game.isGameOver ? 'End Game' : 'End Turn',
+                        onPressed: () {
+                          if (game.isGameOver) {
+                            Navigator.pushNamed(
+                              context,
+                              EndGameScreen.routeName,
+                            );
+                          } else {
+                            // 👇 NEW: ask GameState if this call started a new round
+                            final startedNewRound =
+                                context.read<GameState>().nextTurn();
+
+                            if (startedNewRound) {
+                              Navigator.pushReplacementNamed(
+                                context,
+                                RoundStartScreen.routeName,
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 55),
+
+                    // LOGO
+                    const AlchemistsFollyLogo(),
+
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                PrimaryButton(
-                  label: 'End Game',
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      EndGameScreen.routeName,
-                    );
-                  },
+
+            // ORANGE PAUSE BUTTON
+            Positioned(
+              left: 14,
+              top: 16,
+              child: CircleIconButton(
+                backgroundColor: const Color(0xFFFE7305),
+                icon: Icons.menu,
+                onTap: () => showPauseDialog(context),
+              ),
+            ),
+
+            // YELLOW SCOREBOARD BUTTON
+            Positioned(
+              right: 14,
+              top: 16,
+              child: CircleIconButton(
+                backgroundColor: const Color(0xFFFFC037),
+                icon: Icons.group,
+                onTap: () => showScoreboardDialog(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Big parchment scroll buttons (Potion List / Brew / Library / Market)
+class _MenuScrollButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _MenuScrollButton({
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // match Figma width ~315 and parchment style similar to potion list
+    return Center(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 315,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFDB8D),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: const Color(0xFFFFDB8D),
+              width: 5,
+            ),
+          ),
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF6E3),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: const Color(0xFF351B10),
+                width: 4,
+              ),
+              boxShadow: [
+                // subtle “grainy” edge similar to potion list
+                BoxShadow(
+                  color: const Color(0xFFFFE5A8).withValues(alpha: 0.9),
+                  blurRadius: 0.6,
+                  spreadRadius: 1.2,
                 ),
-                PrimaryButton(
-                  label: game.isGameOver ? 'Game Over' : 'End Turn',
-                  // Always pass a non-null callback (PrimaryButton expects VoidCallback)
-                  onPressed: () {
-                    if (!game.isGameOver) {
-                      context.read<GameState>().nextTurn();
-                    }
-                    // If game.isGameOver, button does nothing but still satisfies type.
-                  },
+                BoxShadow(
+                  color: const Color(0xFFCC9A4B).withValues(alpha: 0.5),
+                  blurRadius: 0.6,
+                  spreadRadius: 0.4,
+                  offset: const Offset(0, 1),
                 ),
               ],
             ),
-          ],
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontFamily: 'JMH Cthulhumbus Arcade',
+                fontSize: 28,
+                height: 0.9,
+                color: Color(0xFF351B10),
+              ),
+            ),
+          ),
         ),
       ),
     );

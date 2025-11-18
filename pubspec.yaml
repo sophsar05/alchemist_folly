@@ -32,6 +32,7 @@ flutter:
     - assets/images/bg_library.png
     - assets/images/bg_market.png
     - assets/images/bg_secret.png
+    - assets/images/potion.png
     # If you have more, add them here:
     # - assets/images/logo.png
     # - assets/images/your_other_bg.png
@@ -43,4 +44,7 @@ flutter:
     - family: Pixel Game
       fonts:
         - asset: assets/fonts/PixelGame.otf
+    - family: Merchant Copy
+      fonts:
+        - asset: assets/fonts/MerchantCopy.ttf
 

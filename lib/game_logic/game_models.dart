@@ -1,10 +1,16 @@
+// lib/game_logic/game_models.dart
+
 import 'dart:math';
+
+// ============================================================================
+// ENUMS & BASIC MODELS
+// ============================================================================
 
 enum IngredientCategory { herb, mineral, creature, essence }
 
 class Ingredient {
-  final String id;    // e.g. "moonleaf"
-  final String name;  // e.g. "Moonleaf"
+  final String id;    // unique ID, ex: "moonleaf"
+  final String name;  // display name, ex: "Moonleaf"
   final IngredientCategory category;
 
   const Ingredient({
@@ -23,7 +29,7 @@ class Potion {
   final String essenceId;
   final int points;
   final bool isSecretCandidate;
-  final String? hint; // for Library screen
+  final String? hint;
 
   const Potion({
     required this.id,
@@ -44,8 +50,8 @@ class MarketEvent {
   final MarketEventType type;
   final String title;
   final String description;
-  final String? ingredientId; // which ingredient it talks about
-  final int bonusOrPenalty;   // PP impact per successful brew using that ingredient
+  final String? ingredientId;
+  final int bonusOrPenalty;
 
   const MarketEvent({
     required this.type,
@@ -80,15 +86,15 @@ class Player {
 }
 
 class BrewResult {
-  final bool success;          // did they brew a known potion?
-  final String message;        // summary for the result screen
-  final Potion? potion;        // matched potion, if any
-  final int basePoints;        // potion’s base PP
-  final int bonusPoints;       // market + secret + folly modifiers
-  final int totalPoints;       // base + bonus
-  final bool isSecretPotion;   // true if this was the secret potion
-  final bool triggeredFolly;   // true if a penalty folly happened
-  final int apSpent;           // AP used for this brew (usually 2)
+  final bool success;
+  final String message;
+  final Potion? potion;
+  final int basePoints;
+  final int bonusPoints;
+  final int totalPoints;
+  final bool isSecretPotion;
+  final bool triggeredFolly;
+  final int apSpent;
 
   const BrewResult({
     required this.success,
@@ -103,9 +109,9 @@ class BrewResult {
   });
 }
 
-// ---------------------------------------------------------------------------
+// ============================================================================
 // INGREDIENTS CATALOG
-// ---------------------------------------------------------------------------
+// ============================================================================
 
 const List<Ingredient> kIngredients = [
   // Herbs
@@ -205,9 +211,16 @@ Ingredient? ingredientByName(String? name) {
   return null;
 }
 
-// ---------------------------------------------------------------------------
-// POTIONS CATALOG
-// ---------------------------------------------------------------------------
+Ingredient? ingredientById(String id) {
+  for (final ing in kIngredients) {
+    if (ing.id == id) return ing;
+  }
+  return null;
+}
+
+// ============================================================================
+// POTIONS CATALOG – ALL 15 POTIONS
+// ============================================================================
 
 const List<Potion> kPotions = [
   Potion(
@@ -219,8 +232,7 @@ const List<Potion> kPotions = [
     essenceId: 'shadow_oil',
     points: 8,
     isSecretCandidate: true,
-    hint:
-        '“When the shadows drink the sea, your form will fade like mist.”',
+    hint: 'Eyes search, yet I slip between their gaze.',
   ),
   Potion(
     id: 'sleep',
@@ -231,8 +243,7 @@ const List<Potion> kPotions = [
     essenceId: 'spirit_dew',
     points: 7,
     isSecretCandidate: true,
-    hint:
-        '“Silver tides and quiet ink cradle even the loudest minds.”',
+    hint: 'When the silver tides rise, I cradle the restless.',
   ),
   Potion(
     id: 'frost',
@@ -243,38 +254,134 @@ const List<Potion> kPotions = [
     essenceId: 'spirit_dew',
     points: 7,
     isSecretCandidate: true,
-    hint: '“When winter bites the stone, breath itself will shiver.”',
+    hint: 'A cold whisper lingers where the world slows.',
   ),
   Potion(
-    id: 'healing',
-    name: 'Healing Draught',
-    herbId: 'emberroot',
-    mineralId: 'crystal_dust',
-    creatureId: 'phoenix_feather',
+    id: 'curse_breaking',
+    name: 'Curse-Breaking Potion',
+    herbId: 'nightshade',
+    mineralId: 'sulfur_stone',
+    creatureId: 'basilisk_fang',
     essenceId: 'light_essence',
-    points: 6,
+    points: 7,
+    hint: 'Dark threads unravel, but only if you see them first.',
   ),
   Potion(
-    id: 'strength',
-    name: 'Strength Elixir',
-    herbId: 'emberroot',
-    mineralId: 'iron_shard',
-    creatureId: 'dragon_scale',
+    id: 'luck',
+    name: 'Luck Potion',
+    herbId: 'nightshade',
+    mineralId: 'sulfur_stone',
+    creatureId: 'kraken_ink',
     essenceId: 'forest_blood',
-    points: 6,
+    points: 7,
+    hint: 'Fate smiles quietly when chance stirs the air.',
+  ),
+  Potion(
+    id: 'water_breathing',
+    name: 'Water Breathing Potion',
+    herbId: 'frostmint',
+    mineralId: 'blue_ore',
+    creatureId: 'kraken_ink',
+    essenceId: 'spirit_dew',
+    points: 7,
+    hint: 'Where the world is liquid, silence becomes breath.',
   ),
   Potion(
     id: 'clarity',
-    name: 'Clarity Tonic',
-    herbId: 'frostmint',
+    name: 'Clarity Potion',
+    herbId: 'moonleaf',
+    mineralId: 'crystal_dust',
+    creatureId: 'basilisk_fang',
+    essenceId: 'spirit_dew',
+    points: 6,
+    hint: 'The haze recedes, but only in fleeting glimpses.',
+  ),
+  Potion(
+    id: 'poison_antidote',
+    name: 'Poison Antidote',
+    herbId: 'moonleaf',
+    mineralId: 'iron_shard',
+    creatureId: 'basilisk_fang',
+    essenceId: 'light_essence',
+    points: 5,
+    hint: 'Where venom lingers, I offer silent counsel.',
+  ),
+  Potion(
+    id: 'energy',
+    name: 'Energy Potion',
+    herbId: 'emberroot',
+    mineralId: 'sulfur_stone',
+    creatureId: 'phoenix_feather',
+    essenceId: 'forest_blood',
+    points: 5,
+    hint: 'A spark unseen quickens what slumbers within.',
+  ),
+  Potion(
+    id: 'levitation',
+    name: 'Levitation Potion',
+    herbId: 'moonleaf',
     mineralId: 'crystal_dust',
     creatureId: 'phoenix_feather',
     essenceId: 'spirit_dew',
     points: 5,
+    hint: 'The ground grows distant, and even shadows hesitate.',
+  ),
+  Potion(
+    id: 'speed',
+    name: 'Speed Potion',
+    herbId: 'frostmint',
+    mineralId: 'sulfur_stone',
+    creatureId: 'phoenix_feather',
+    essenceId: 'forest_blood',
+    points: 5,
+    hint: 'Time bends where I pass, yet no one notices.',
+  ),
+  Potion(
+    id: 'love',
+    name: 'Love Potion',
+    herbId: 'emberroot',
+    mineralId: 'crystal_dust',
+    creatureId: 'phoenix_feather',
+    essenceId: 'light_essence',
+    points: 4,
+    hint: 'Hearts may flutter where warmth meets flame.',
+  ),
+  Potion(
+    id: 'healing',
+    name: 'Healing Potion',
+    herbId: 'moonleaf',
+    mineralId: 'crystal_dust',
+    creatureId: 'phoenix_feather',
+    essenceId: 'light_essence',
+    points: 4,
+    hint: 'Beneath gentle hands, fractures mend quietly.',
+  ),
+  Potion(
+    id: 'fire_resistance',
+    name: 'Fire Resistance Potion',
+    herbId: 'emberroot',
+    mineralId: 'iron_shard',
+    creatureId: 'dragon_scale',
+    essenceId: 'light_essence',
+    points: 4,
+    hint: 'I walk among heat yet leave no mark.',
+  ),
+  Potion(
+    id: 'strength',
+    name: 'Strength Potion',
+    herbId: 'emberroot',
+    mineralId: 'iron_shard',
+    creatureId: 'dragon_scale',
+    essenceId: 'forest_blood',
+    points: 4,
+    hint: 'Beneath strain and weight, hidden power awakens.',
   ),
 ];
 
-// Utility
+// ============================================================================
+// HELPERS USED BY GAMESTATE
+// ============================================================================
+
 Potion? findPotionMatch({
   required String herbId,
   required String mineralId,
@@ -294,5 +401,7 @@ Potion? findPotionMatch({
 
 Potion pickRandomSecretPotion(Random random) {
   final candidates = kPotions.where((p) => p.isSecretCandidate).toList();
-  return candidates[random.nextInt(candidates.length)];
+  // Fallback: if none are marked as candidates, use all potions
+  final pool = candidates.isNotEmpty ? candidates : kPotions;
+  return pool[random.nextInt(pool.length)];
 }

@@ -1,18 +1,46 @@
-import 'package:flutter/material.dart';
-import '../widgets/background_scaffold.dart';
-import '../widgets/primary_button.dart';
-import 'market_announcement_screen.dart';
-import 'game_master_screen.dart';
+// lib/screens/round_start_screen.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/game_state.dart';
 import '../widgets/background_scaffold.dart';
-import '../widgets/primary_button.dart';
-import 'market_announcement_screen.dart';
-class RoundStartScreen extends StatelessWidget {
+import '../widgets/game_overlays.dart';
+import '../widgets/alchemists_folly_logo.dart';
+import 'game_master_screen.dart';
+
+class RoundStartScreen extends StatefulWidget {
   static const routeName = '/round-start';
 
   const RoundStartScreen({super.key});
+
+  @override
+  State<RoundStartScreen> createState() => _RoundStartScreenState();
+}
+
+class _RoundStartScreenState extends State<RoundStartScreen> {
+  static const Duration _displayDuration = Duration(seconds: 2);
+
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _timer = Timer(_displayDuration, () {
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(
+        context,
+        GameMasterScreen.routeName,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,45 +48,78 @@ class RoundStartScreen extends StatelessWidget {
 
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_default.png',
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      child: SafeArea(
+        child: Stack(
           children: [
-            Text(
-              'Round ${game.currentRound}',
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Prepare your components and pawns on the board.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Players:',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            ...game.players.map(
-              (p) => Text(
-                '• ${p.name}',
-                style: const TextStyle(
-                  fontFamily: 'Pixel Game',
-                  fontSize: 18,
-                ),
+            // pause + scoreboard buttons re-used
+            Positioned(
+              left: 14,
+              top: 16,
+              child: CircleIconButton(
+                backgroundColor: const Color(0xFFFE7305),
+                icon: Icons.menu,
+                onTap: () => showPauseDialog(context),
               ),
             ),
-            const SizedBox(height: 40),
-            PrimaryButton(
-              label: 'Continue',
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  MarketAnnouncementScreen.routeName,
-                );
-              },
+            Positioned(
+              right: 14,
+              top: 16,
+              child: CircleIconButton(
+                backgroundColor: const Color(0xFFFFC037),
+                icon: Icons.group,
+                onTap: () => showScoreboardDialog(context),
+              ),
+            ),
+
+            // center content
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'COMMENCING',
+                    style: TextStyle(
+                      fontFamily: 'Pixel Game',
+                      fontSize: 40,
+                      color: Color(0xFFFFF6E3),
+                      shadows: [Shadow(blurRadius: 8.9, color: Colors.black)],
+                    ),
+                  ),
+                  const Text(
+                    'ROUND',
+                    style: TextStyle(
+                      fontFamily: 'Pixel Game',
+                      fontSize: 40,
+                      color: Color(0xFFFFF6E3),
+                      shadows: [Shadow(blurRadius: 8.9, color: Colors.black)],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    width: 160,
+                    height: 160,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFFFFF6E3),
+                      border: Border.all(
+                        color: const Color(0xFF351B10),
+                        width: 10,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '${game.currentRound}',
+                      style: const TextStyle(
+                        fontFamily: 'Pixel Game',
+                        fontSize: 90,
+                        color: Color(0xFF983333),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  const AlchemistsFollyLogo(),
+                ],
+              ),
             ),
           ],
         ),
