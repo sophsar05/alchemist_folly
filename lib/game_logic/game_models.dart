@@ -9,8 +9,8 @@ import 'dart:math';
 enum IngredientCategory { herb, mineral, creature, essence }
 
 class Ingredient {
-  final String id;    // unique ID, ex: "moonleaf"
-  final String name;  // display name, ex: "Moonleaf"
+  final String id; // unique ID, ex: "moonleaf"
+  final String name; // display name, ex: "Moonleaf"
   final IngredientCategory category;
 
   const Ingredient({
