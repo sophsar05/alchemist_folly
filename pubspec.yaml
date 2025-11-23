@@ -35,6 +35,8 @@ flutter:
     - assets/images/potion.png
     - assets/images/demand-vector.png
     - assets/images/surplus-vector.png
+    - assets/images/logo.png
+
     # If you have more, add them here:
     # - assets/images/logo.png
     # - assets/images/your_other_bg.png

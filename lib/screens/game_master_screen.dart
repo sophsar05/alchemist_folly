@@ -32,6 +32,22 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
     final game = context.watch<GameState>();
     final player = game.currentPlayer;
 
+    // Same palette as the avatars:
+    const iconColors = [
+      Color.fromARGB(255, 180, 67, 67), // Player 1 - red 0xFF983333
+      Color.fromARGB(255, 42, 210, 240), // Player 2 - blue
+      Color(0xFFFFDB8D), // Player 3 - yellow
+      Color.fromARGB(255, 148, 122, 250), // Player 4 - purple
+    ];
+
+    // Find this player's index so we can color their name
+    final playerIndex =
+        game.players.indexWhere((p) => p.id == player.id);
+    final Color nameColor = (playerIndex >= 0 &&
+            playerIndex < iconColors.length)
+        ? iconColors[playerIndex]
+        : const Color(0xFFFFF6E3); // fallback
+
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_default.png',
       child: SafeArea(
@@ -74,45 +90,68 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                       height: 54,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                        color:
+                            const Color(0xFFFFF6E3).withValues(alpha: 0.96),
                         border: Border.all(
                           color: const Color(0xFF351B10),
                           width: 4,
                         ),
                       ),
                       alignment: Alignment.center,
+    
                       child: Text(
-                        '${game.currentRound}',
-                        style: const TextStyle(
+                      '${game.currentRound}',
+                      style: TextStyle(
+                        fontFamily: 'Pixel Game',
+                        fontSize: 55,
+                        height: 0.71,
+                        color: nameColor, // 🔥 color changes based on player index
+                      ),
+                    ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+
+                    // PLAYER NAME TURN – colored by player
+                    Stack(
+                    children: [
+                      // OUTLINE — black, drawn 4 times around the text
+                      for (final offset in [
+                        const Offset(-2, -2),
+                        const Offset(2, -2),
+                        const Offset(-2, 2),
+                        const Offset(2, 2),
+                      ])
+                        Positioned(
+                          left: offset.dx,
+                          top: offset.dy,
+                          child: Text(
+                            "${player.name.toUpperCase()}'S TURN",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'Pixel Game',
+                              fontSize: 32,
+                              height: 0.71,
+                              color: Colors.black, // outline color
+                              letterSpacing: -0.01,
+                            ),
+                          ),
+                        ),
+
+                      // MAIN TEXT — uses player color
+                      Text(
+                        "${player.name.toUpperCase()}'S TURN",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
                           fontFamily: 'Pixel Game',
-                          fontSize: 55,
+                          fontSize: 32,
                           height: 0.71,
-                          color: Color(0xFF983333),
+                          color: nameColor, // center colored text
                           letterSpacing: -0.01,
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // PLAYER NAME TURN
-                    Text(
-                      "${player.name.toUpperCase()}'S TURN",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 32,
-                        height: 0.71,
-                        color: Color(0xFFFFF6E3),
-                        letterSpacing: -0.01,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 8.9,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
+                  ),
 
                     const SizedBox(height: 4),
 
@@ -125,9 +164,11 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
 
                     const SizedBox(height: 4),
 
-                    // POINTS LABEL
+                    // POINTS LABEL (kept white for readability)
+                    const SizedBox(height: 4),
                     Text(
-                      'POINTS: ${player.prestige}${player.stardust > 0 ? ' | STARDUST: ${player.stardust}' : ''}',
+                      'POINTS: ${player.prestige}'
+                      '${player.stardust > 0 ? ' | STARDUST: ${player.stardust}' : ''}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontFamily: 'Pixel Game',
@@ -201,7 +242,6 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                               EndGameScreen.routeName,
                             );
                           } else {
-                            // 👇 NEW: ask GameState if this call started a new round
                             final startedNewRound =
                                 context.read<GameState>().nextTurn();
 
@@ -254,8 +294,6 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
     );
   }
 }
-
-/// Big parchment scroll buttons (Potion List / Brew / Library / Market)
 class _MenuScrollButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -267,7 +305,6 @@ class _MenuScrollButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // match Figma width ~315 and parchment style similar to potion list
     return Center(
       child: GestureDetector(
         onTap: onTap,
@@ -291,7 +328,6 @@ class _MenuScrollButton extends StatelessWidget {
                 width: 4,
               ),
               boxShadow: [
-                // subtle “grainy” edge similar to potion list
                 BoxShadow(
                   color: const Color(0xFFFFE5A8).withValues(alpha: 0.9),
                   blurRadius: 0.6,
@@ -308,7 +344,8 @@ class _MenuScrollButton extends StatelessWidget {
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Text(
-              label,
+              label, // ✅ now uses the passed-in label
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: 'JMH Cthulhumbus Arcade',
                 fontSize: 28,
