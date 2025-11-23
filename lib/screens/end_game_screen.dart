@@ -22,7 +22,7 @@ class EndGameScreen extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Highest Points After 15 Rounds',
+              'Total Points Per Player',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontFamily: 'JMH Cthulhumbus Arcade',

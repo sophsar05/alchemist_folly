@@ -152,7 +152,6 @@ class _MarketScreenState extends State<MarketScreen> {
     final totalCost =
         _shoppingCart.values.fold<int>(0, (sum, count) => sum + (count * 2));
     final canAfford = game.currentPlayer.prestige >= totalCost;
-    final hasAP = game.currentAP >= 1;
 
     return Container(
       decoration: BoxDecoration(
@@ -189,7 +188,7 @@ class _MarketScreenState extends State<MarketScreen> {
           ),
 
           Text(
-            'Current PP: ${game.currentPlayer.prestige} | AP: ${game.currentAP}',
+            'Current PP: ${game.currentPlayer.prestige}',
             style: const TextStyle(
               fontFamily: 'Pixel Game',
               fontSize: 14,
@@ -251,7 +250,7 @@ class _MarketScreenState extends State<MarketScreen> {
               ),
               PrimaryButton(
                 label: 'Purchase',
-                onPressed: (canAfford && hasAP)
+                onPressed: (canAfford )
                     ? () => _makePurchase(context, game)
                     : () {},
               ),
@@ -475,7 +474,6 @@ class _MarketScreenState extends State<MarketScreen> {
   Widget _buildBlackMarketPage(BuildContext context, GameState game) {
     final totalIngredients =
         _tradingCart.values.fold<int>(0, (sum, count) => sum + count);
-    final hasAP = game.currentAP >= 1;
     final hasIngredients = totalIngredients > 0;
 
     return Container(
@@ -515,7 +513,7 @@ class _MarketScreenState extends State<MarketScreen> {
             ),
           ),
           Text(
-            'Current Stardust: ${game.currentPlayer.stardust} | AP: ${game.currentAP}',
+            'Current Stardust: ${game.currentPlayer.stardust}',
             style: const TextStyle(
               fontFamily: 'Pixel Game',
               fontSize: 14,
@@ -578,7 +576,7 @@ class _MarketScreenState extends State<MarketScreen> {
               ),
               PrimaryButton(
                 label: 'Trade',
-                onPressed: (hasIngredients && hasAP)
+                onPressed: (hasIngredients)
                     ? () => _makeTrade(context, game)
                     : () {},
               ),

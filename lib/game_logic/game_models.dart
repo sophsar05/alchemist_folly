@@ -81,7 +81,7 @@ class Player {
     required this.name,
     this.prestige = 0,
     this.potionsBrewed = 0,
-    this.stardust = 0,
+    this.stardust = 1,
     this.discoveredSecretPotion = false,
   });
 }
@@ -401,8 +401,5 @@ Potion? findPotionMatch({
 }
 
 Potion pickRandomSecretPotion(Random random) {
-  final candidates = kPotions.where((p) => p.isSecretCandidate).toList();
-  // Fallback: if none are marked as candidates, use all potions
-  final pool = candidates.isNotEmpty ? candidates : kPotions;
-  return pool[random.nextInt(pool.length)];
+  return kPotions[random.nextInt(kPotions.length)];
 }
