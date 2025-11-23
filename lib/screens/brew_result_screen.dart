@@ -10,7 +10,9 @@ import '../game_logic/game_models.dart';
 class BrewResultScreen extends StatelessWidget {
   static const routeName = '/brew-result';
 
+
   const BrewResultScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,7 @@ class BrewResultScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 25),
 
                     // ------------------ ROUND HEADER ------------------
                     Row(
@@ -103,9 +105,9 @@ class BrewResultScreen extends StatelessWidget {
                       ],
                     ),
 
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 130),
 
-                
+
                     // ---------------- POTION NAME ---------------------
                     Text(
                       (result.potion?.name ?? 'Potion').toUpperCase(),
@@ -131,8 +133,9 @@ class BrewResultScreen extends StatelessWidget {
 
 
                     // ---------- POINTS + POTION IMAGE ROW -------------
-                    Expanded(
-                      child: Row(
+                    SizedBox(
+                        height: 260, // 👈 reduce as needed (try 220–260)
+                        child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // LEFT: base points
