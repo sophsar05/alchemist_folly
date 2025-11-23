@@ -36,6 +36,14 @@ flutter:
     - assets/images/demand-vector.png
     - assets/images/surplus-vector.png
     - assets/images/logo.png
+    - assets/images/potions/
+    
+  # Ingredient sets
+    - assets/images/ingredients/azure-forest/
+    - assets/images/ingredients/crimson-volcano/
+    - assets/images/ingredients/obsidian-caves/
+    - assets/images/ingredients/sunstone-mine/
+
 
     # If you have more, add them here:
     # - assets/images/logo.png

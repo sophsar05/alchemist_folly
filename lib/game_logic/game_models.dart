@@ -219,6 +219,55 @@ Ingredient? ingredientById(String id) {
   return null;
 }
 
+// Maps ingredient IDs to their asset paths.
+String ingredientAsset(String id) {
+  switch (id) {
+    // AZURE FOREST (creatures)
+    case 'basilisk_fang':
+      return 'assets/images/ingredients/azure-forest/basiliskfang.png';
+    case 'dragon_scale':
+      return 'assets/images/ingredients/azure-forest/dragonscale.png';
+    case 'kraken_ink':
+      return 'assets/images/ingredients/azure-forest/krakenink.png';
+    case 'phoenix_feather':
+      return 'assets/images/ingredients/azure-forest/phoenixfeather.png';
+
+    // CRIMSON VOLCANO (essences)
+    case 'forest_blood':
+      return 'assets/images/ingredients/crimson-volcano/forestblood.png';
+    case 'light_essence':
+      return 'assets/images/ingredients/crimson-volcano/lightessence.png';
+    case 'shadow_oil':
+      return 'assets/images/ingredients/crimson-volcano/shadowoil.png';
+    case 'spirit_dew':
+      return 'assets/images/ingredients/crimson-volcano/spiritdew.png';
+
+    // OBSIDIAN CAVES (herbs)
+    case 'emberroot':
+      return 'assets/images/ingredients/obsidian-caves/emberroot.png';
+    case 'frostmint':
+      return 'assets/images/ingredients/obsidian-caves/frostmint.png';
+    case 'moonleaf':
+      return 'assets/images/ingredients/obsidian-caves/moonleaf.png';
+    case 'nightshade':
+      return 'assets/images/ingredients/obsidian-caves/nightshade.png';
+
+    // SUNSTONE MINE (minerals)
+    case 'blue_ore':
+      return 'assets/images/ingredients/sunstone-mine/blueore.png';
+    case 'crystal_dust':
+      return 'assets/images/ingredients/sunstone-mine/crystaldust.png';
+    case 'iron_shard':
+      return 'assets/images/ingredients/sunstone-mine/ironshard.png';
+    case 'sulfur_stone':
+      return 'assets/images/ingredients/sunstone-mine/sulfurstone.png';
+  }
+
+  // Fallback (optional placeholder if you add one)
+  return 'assets/images/ingredients/placeholder.png';
+}
+
+
 // ============================================================================
 // POTIONS CATALOG – ALL 15 POTIONS
 // ============================================================================

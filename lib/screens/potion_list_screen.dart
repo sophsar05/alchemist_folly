@@ -13,14 +13,14 @@ class PotionListScreen extends StatelessWidget {
 
   Color _colorForCategory(IngredientCategory category) {
     switch (category) {
-      case IngredientCategory.herb:
-        return const Color(0xFF009EBA); // blue
-      case IngredientCategory.mineral:
-        return const Color(0xFFFE7305); // orange
-      case IngredientCategory.creature:
-        return const Color(0xFFD9408F); // pink/red
-      case IngredientCategory.essence:
-        return const Color(0xFF8E5CF4); // purple
+      case IngredientCategory.herb: // obsidian purple
+        return const Color(0xFF8E5CF4);
+      case IngredientCategory.mineral: //susnstone yellow
+        return const Color(0xFFFE7305);
+      case IngredientCategory.creature: //azure blue
+        return const Color(0xFF009EBA); 
+      case IngredientCategory.essence: //crimson red
+        return const Color(0xFFD9408F); 
     }
   }
 
@@ -260,11 +260,11 @@ class _PotionCard extends StatelessWidget {
                       ),
                       children: [
                         TextSpan(
-                          text: herb.name,
+                          text: creature.name,
                           style: TextStyle(
                             color: isBrewed
                                 ? baseTextColor
-                                : colorForCategory(herb.category),
+                                : colorForCategory(creature.category),
                           ),
                         ),
                         const TextSpan(text: ', '),
@@ -278,11 +278,11 @@ class _PotionCard extends StatelessWidget {
                         ),
                         const TextSpan(text: ', '),
                         TextSpan(
-                          text: creature.name,
+                          text: herb.name,
                           style: TextStyle(
                             color: isBrewed
                                 ? baseTextColor
-                                : colorForCategory(creature.category),
+                                : colorForCategory(herb.category),
                           ),
                         ),
                         const TextSpan(text: ', '),
