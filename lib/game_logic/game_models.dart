@@ -79,7 +79,7 @@ class Player {
   Player({
     required this.id,
     required this.name,
-    this.prestige = 4,
+    this.prestige = 0,
     this.potionsBrewed = 0,
     this.stardust = 0,
     this.discoveredSecretPotion = false,

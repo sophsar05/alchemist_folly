@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import '../widgets/background_scaffold.dart';
-import '../widgets/primary_button.dart';
-import 'brew_result_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/game_state.dart';
 import '../widgets/background_scaffold.dart';
 import '../widgets/primary_button.dart';
 import 'brew_result_screen.dart';
+import 'secret_reveal_screen.dart';
 
 class BrewScreen extends StatefulWidget {
   static const routeName = '/brew';
@@ -31,13 +29,13 @@ class _BrewScreenState extends State<BrewScreen> {
     'Dragon Scale',
     'Phoenix Feather',
     'Kraken Ink',
-    'Basilisk Fang'
+    'Basilisk Fang',
   ];
   final essences = [
     'Light Essence',
     'Shadow Oil',
     'Spirit Dew',
-    'Forest Blood'
+    'Forest Blood',
   ];
 
   @override
@@ -135,6 +133,16 @@ class _BrewScreenState extends State<BrewScreen> {
                   useStardust: useStardust,
                 );
 
+                // If secret potion: jump straight to reveal flow
+                if (result.isSecretPotion) {
+                  Navigator.pushReplacementNamed(
+                    context,
+                    SecretRevealScreen.routeName,
+                  );
+                  return;
+                }
+
+                // Otherwise go to normal result screen
                 Navigator.pushNamed(
                   context,
                   BrewResultScreen.routeName,
