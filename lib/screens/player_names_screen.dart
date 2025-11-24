@@ -6,6 +6,8 @@ import '../widgets/primary_button.dart';
 import '../widgets/background_scaffold.dart';
 import '../widgets/alchemists_folly_logo.dart';
 import '../providers/game_state.dart';
+import 'round_start_screen.dart';
+
 
 class PlayerNamesScreen extends StatefulWidget {
   static const routeName = '/player-names';
@@ -45,19 +47,23 @@ class _PlayerNamesScreenState extends State<PlayerNamesScreen> {
   }
 
   void _startGame() {
-    final names = List<String>.generate(
-      _playerCount,
-      (i) {
-        final raw = _controllers[i].text.trim();
-        return raw.isEmpty ? 'Player ${i + 1}' : raw;
-      },
-    );
+  final names = List<String>.generate(
+    _playerCount,
+    (i) {
+      final raw = _controllers[i].text.trim();
+      return raw.isEmpty ? 'Player ${i + 1}' : raw;
+    },
+  );
 
-    final game = context.read<GameState>();
-    game.setPlayerNames(names);
+  final game = context.read<GameState>();
+  game.setPlayerNames(names);
 
-    Navigator.pushReplacementNamed(context, '/game-master');
-  }
+  Navigator.pushReplacementNamed(
+    context,
+    RoundStartScreen.routeName,
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

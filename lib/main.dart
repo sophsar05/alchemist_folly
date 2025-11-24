@@ -50,6 +50,7 @@ class AlchemistFollyApp extends StatelessWidget {
           MarketScreen.routeName: (_) => const MarketScreen(),
           SecretRevealScreen.routeName: (_) => const SecretRevealScreen(),
           EndGameScreen.routeName: (_) => const EndGameScreen(),
+          PotionListScreen.routeName: (_) => const PotionListScreen(),
         },
       ),
     );

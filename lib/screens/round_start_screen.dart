@@ -70,7 +70,7 @@ class _RoundStartScreenState extends State<RoundStartScreen> {
                       shadows: [Shadow(blurRadius: 8.9, color: Colors.black)],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   Container(
                     width: 160,
                     height: 160,
@@ -92,7 +92,32 @@ class _RoundStartScreenState extends State<RoundStartScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
+
+                  // ⭐ Only show this instruction in ROUND 1
+                  if (game.currentRound == 1)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        "\"Take 3 ingredient cards, \nexcept your own color\"",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Pixel Game',
+                          fontSize: 24,
+                          height: 1.2,
+                          color: Color(0xFFFFF6E3),
+                          shadows: [
+                            Shadow(
+                              blurRadius: 8.9,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  const SizedBox(height: 30),
+
                   const AlchemistsFollyLogo(),
                   const SizedBox(height: 40),
                   PrimaryButton(
