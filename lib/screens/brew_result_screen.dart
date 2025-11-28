@@ -10,14 +10,11 @@ import '../game_logic/game_models.dart';
 class BrewResultScreen extends StatelessWidget {
   static const routeName = '/brew-result';
 
-
   const BrewResultScreen({super.key});
-
 
   @override
   Widget build(BuildContext context) {
-    final result =
-        ModalRoute.of(context)!.settings.arguments as BrewResult?;
+    final result = ModalRoute.of(context)!.settings.arguments as BrewResult?;
 
     if (result == null) {
       return const BackgroundScaffold(
@@ -107,7 +104,6 @@ class BrewResultScreen extends StatelessWidget {
 
                     const SizedBox(height: 130),
 
-
                     // ---------------- POTION NAME ---------------------
                     Text(
                       (result.potion?.name ?? 'Potion').toUpperCase(),
@@ -131,11 +127,10 @@ class BrewResultScreen extends StatelessWidget {
                       ),
                     ),
 
-
                     // ---------- POINTS + POTION IMAGE ROW -------------
                     SizedBox(
-                        height: 260, // 👈 reduce as needed (try 220–260)
-                        child: Row(
+                      height: 260,
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // LEFT: base points
@@ -272,11 +267,22 @@ class BrewResultScreen extends StatelessWidget {
                       height: 46,
                       child: GestureDetector(
                         onTap: () {
-                          // Back to Game Master / turn screen
-                          Navigator.popUntil(
-                            context,
-                            ModalRoute.withName('/game-master'),
-                          );
+                          final game = context.read<GameState>();
+
+                          // check if 20 pp win
+                          if (game.isGameOverByPoints) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              '/end-game-flow',
+                              (route) => false,
+                            );
+                          } else {
+                            // back to game master screen
+                            Navigator.popUntil(
+                              context,
+                              ModalRoute.withName('/game-master'),
+                            );
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(

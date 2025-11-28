@@ -1,6 +1,7 @@
 // lib/game_logic/game_models.dart
 
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 
 // ============================================================================
 // ENUMS & BASIC MODELS
@@ -52,6 +53,7 @@ class MarketEvent {
   final String description;
   final String? ingredientId;
   final int bonusOrPenalty;
+  final String? locationName;
 
   const MarketEvent({
     required this.type,
@@ -59,6 +61,7 @@ class MarketEvent {
     required this.description,
     this.ingredientId,
     this.bonusOrPenalty = 0,
+    this.locationName,
   });
 
   static const calm = MarketEvent(
@@ -204,17 +207,46 @@ const List<Ingredient> kIngredients = [
   ),
 ];
 
+// location names for surplus events
+const List<String> kLocationNames = [
+  'The Sunstone Mines',
+  'The Azure Forest',
+  'The Crimson Volcano',
+  'The Obsidian Caves',
+];
+
+String getIngredientLocation(String ingredientId) {
+  final ingredient = ingredientById(ingredientId);
+  if (ingredient == null) return kLocationNames[0];
+
+  switch (ingredient.category) {
+    case IngredientCategory.herb:
+      return 'The Azure Forest';
+    case IngredientCategory.mineral:
+      return 'The Sunstone Mines';
+    case IngredientCategory.creature:
+      return 'The Crimson Volcano';
+    case IngredientCategory.essence:
+      return 'The Obsidian Caves';
+  }
+}
+
 Ingredient? ingredientByName(String? name) {
   if (name == null) return null;
   for (final ing in kIngredients) {
-    if (ing.name == name) return ing;
+    if (ing.name == name) {
+      return ing;
+    }
   }
   return null;
 }
 
-Ingredient? ingredientById(String id) {
+Ingredient? ingredientById(String? id) {
+  if (id == null) return null;
   for (final ing in kIngredients) {
-    if (ing.id == id) return ing;
+    if (ing.id == id) {
+      return ing;
+    }
   }
   return null;
 }
@@ -266,7 +298,6 @@ String ingredientAsset(String id) {
   // Fallback (optional placeholder if you add one)
   return 'assets/images/ingredients/placeholder.png';
 }
-
 
 // ============================================================================
 // POTIONS CATALOG – ALL 15 POTIONS
@@ -438,11 +469,33 @@ Potion? findPotionMatch({
   required String creatureId,
   required String essenceId,
 }) {
+  if (kDebugMode) {
+    debugPrint('🔍 SEARCHING FOR POTION MATCH:');
+    debugPrint(
+        '  Looking for: $herbId + $mineralId + $creatureId + $essenceId');
+  }
+
   for (final p in kPotions) {
+    if (kDebugMode && p.herbId == herbId) {
+      debugPrint(
+          '    Checking ${p.name}: ${p.herbId} + ${p.mineralId} + ${p.creatureId} + ${p.essenceId}');
+      debugPrint(
+          '      Herb match: ${p.herbId == herbId} (${p.herbId} == $herbId)');
+      debugPrint(
+          '      Mineral match: ${p.mineralId == mineralId} (${p.mineralId} == $mineralId)');
+      debugPrint(
+          '      Creature match: ${p.creatureId == creatureId} (${p.creatureId} == $creatureId)');
+      debugPrint(
+          '      Essence match: ${p.essenceId == essenceId} (${p.essenceId} == $essenceId)');
+    }
+
     if (p.herbId == herbId &&
         p.mineralId == mineralId &&
         p.creatureId == creatureId &&
         p.essenceId == essenceId) {
+      if (kDebugMode) {
+        debugPrint('   FOUND: ${p.name} (${p.points} points)');
+      }
       return p;
     }
   }

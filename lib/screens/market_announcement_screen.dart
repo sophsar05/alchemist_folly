@@ -26,7 +26,7 @@ class MarketAnnouncementScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
               child: Center(
                 child: Container(
-                  constraints: const BoxConstraints(maxWidth: 400),
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFDB8D),
                     borderRadius: BorderRadius.circular(22),
@@ -58,7 +58,7 @@ class MarketAnnouncementScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    padding: const EdgeInsets.all(32),
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -66,7 +66,7 @@ class MarketAnnouncementScreen extends StatelessWidget {
                           'Market Announcement !',
                           style: TextStyle(
                             fontFamily: 'Pixel Game',
-                            fontSize: 26,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF351B10),
                           ),
@@ -77,7 +77,7 @@ class MarketAnnouncementScreen extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontFamily: 'JMH Cthulhumbus Arcade',
-                            fontSize: 24,
+                            fontSize: 22,
                             height: 1.2,
                             color: Color(0xFF8B4513),
                             fontWeight: FontWeight.bold,

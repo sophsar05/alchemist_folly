@@ -8,7 +8,8 @@ import '../widgets/background_scaffold.dart';
 import '../widgets/game_overlays.dart'; // CircleIconButton + dialogs
 import '../widgets/primary_button.dart';
 import '../widgets/alchemists_folly_logo.dart';
-import 'end_game_screen.dart';
+import 'main_menu_screen.dart';
+
 
 class SecretRevealScreen extends StatefulWidget {
   static const routeName = '/secret-reveal';
@@ -141,9 +142,12 @@ class _SecretRevealScreenState extends State<SecretRevealScreen> {
                               child: PrimaryButton(
                                 label: 'Done',
                                 onPressed: () {
-                                  Navigator.pushReplacementNamed(
+                                  // Reset game and return to main menu for secret potion win
+                                  context.read<GameState>().reset();
+                                  Navigator.pushNamedAndRemoveUntil(
                                     context,
-                                    EndGameScreen.routeName,
+                                    MainMenuScreen.routeName,
+                                    (route) => false,
                                   );
                                 },
                               ),

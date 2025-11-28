@@ -20,7 +20,6 @@ class _PotionListScreenState extends State<PotionListScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchText = '';
   Potion? _selectedPotion; // for overlay
-  
 
   @override
   void dispose() {
@@ -82,7 +81,6 @@ class _PotionListScreenState extends State<PotionListScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 children: [
-               
                   const SizedBox(height: 20),
 
                   // PARCHMENT PANEL
@@ -124,8 +122,8 @@ class _PotionListScreenState extends State<PotionListScreen> {
 
                               // SEARCH BAR
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Container(
                                   height: 40,
                                   decoration: BoxDecoration(
@@ -677,3 +675,4 @@ class _IngredientDetailRow extends StatelessWidget {
 String _potionAsset(Potion potion) {
   return 'assets/images/potions/${potion.id}.png';
 }
+

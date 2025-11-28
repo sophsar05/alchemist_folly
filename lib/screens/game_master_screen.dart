@@ -11,7 +11,7 @@ import 'brew_screen.dart';
 import 'potion_list_screen.dart';
 import 'library_hint_screen.dart';
 import 'market_screen.dart';
-import 'end_game_screen.dart';
+
 import 'round_start_screen.dart';
 
 import '../widgets/alchemists_folly_logo.dart';
@@ -185,6 +185,31 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                       ),
                     ),
 
+                    const SizedBox(height: 8),
+
+                    // ACTION POINTS DISPLAY
+                    Text(
+                      'ACTION POINTS: ${game.currentAP}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Pixel Game',
+                        fontSize: 20,
+                        height: 0.71,
+                        color: game.currentAP >= 2 
+                            ? const Color(0xFF4ADE80)  // Green when can brew
+                            : game.currentAP >= 1
+                                ? const Color(0xFFFFC037)  // Yellow when can shop
+                                : const Color(0xFFEF4444),  // Red when no AP
+                        letterSpacing: -0.01,
+                        shadows: const [
+                          Shadow(
+                            blurRadius: 6.0,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+
                     const SizedBox(height: 40),
 
                     // BIG SCROLL BUTTONS
@@ -234,12 +259,13 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                     SizedBox(
                       width: 180,
                       child: PrimaryButton(
-                        label: game.isGameOver ? 'End Game' : 'End Turn',
+                        label: game.isGameOverByPoints ? 'End Game' : 'End Turn',
                         onPressed: () {
-                          if (game.isGameOver) {
-                            Navigator.pushNamed(
+                          if (game.isGameOverByPoints) {
+                            Navigator.pushNamedAndRemoveUntil(
                               context,
-                              EndGameScreen.routeName,
+                              '/end-game-flow',
+                              (route) => false,
                             );
                           } else {
                             final startedNewRound =
