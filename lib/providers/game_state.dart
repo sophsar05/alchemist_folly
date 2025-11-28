@@ -23,12 +23,15 @@ class GameState extends ChangeNotifier {
   Player? get winner => _winner;
   bool get secretFound => _secretFound;
 
-  bool get isGameOver =>
-    _secretFound ||
-    players.any((p) => p.prestige >= 20);
+  bool get isGameOver => _secretFound || players.any((p) => p.prestige >= 20);
+
+  // 20 pp or secret potion check
+  bool get isGameOverByPoints =>
+      !_secretFound && players.any((p) => p.prestige >= 20);
 
   Potion? _secretPotion;
   MarketEvent _currentMarketEvent = MarketEvent.calm;
+  int _marketEventTurnsRemaining = 0;
 
   /// IDs of potions that have been successfully brewed at least once.
   /// Used by the Potion List screen to gray out & strike-through.
@@ -52,6 +55,18 @@ class GameState extends ChangeNotifier {
   }
 
   MarketEvent get currentMarketEvent => _currentMarketEvent;
+
+  // surplus check
+  bool isSurplusActive(String ingredientId) {
+    return _currentMarketEvent.type == MarketEventType.surplus &&
+        _currentMarketEvent.ingredientId == ingredientId;
+  }
+
+  // ingredient collection amount
+  int getIngredientCollectionAmount(String ingredientId) {
+    return isSurplusActive(ingredientId) ? 2 : 1;
+  }
+
   Potion? get secretPotion => _secretPotion;
 
   /// Standings sorted by highest prestige first.
@@ -67,17 +82,18 @@ class GameState extends ChangeNotifier {
 
   /// Clears all game data.
   void reset() {
-  _players.clear();
-  _currentPlayerIndex = 0;
-  _currentRound = 1;
-  _currentAP = apPerTurn;
-  _secretPotion = null;
-  _currentMarketEvent = MarketEvent.calm;
-  brewedPotionIds.clear();
-  _winner = null;
-  _secretFound = false;
-  notifyListeners();
-}
+    _players.clear();
+    _currentPlayerIndex = 0;
+    _currentRound = 1;
+    _currentAP = apPerTurn;
+    _secretPotion = null;
+    _currentMarketEvent = MarketEvent.calm;
+    _marketEventTurnsRemaining = 0;
+    brewedPotionIds.clear();
+    _winner = null;
+    _secretFound = false;
+    notifyListeners();
+  }
 
   /// Initializes players and starts a new game.
   void setPlayerNames(List<String> names) {
@@ -110,7 +126,6 @@ class GameState extends ChangeNotifier {
       }
     }
 
-
     _rollMarketEvent();
     notifyListeners();
   }
@@ -120,13 +135,21 @@ class GameState extends ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   void _rollMarketEvent() {
+    if (_marketEventTurnsRemaining > 0) {
+      _marketEventTurnsRemaining--;
+      return;
+    }
+
     // 0 = calm, 1 = inDemand, 2 = surplus, 3 = folly
     final roll = _random.nextInt(4);
 
     if (roll == 0) {
       _currentMarketEvent = MarketEvent.calm;
+      _marketEventTurnsRemaining = 0;
       return;
     }
+
+    _marketEventTurnsRemaining = (3 * players.length) - 1;
 
     final ingredient = kIngredients[_random.nextInt(kIngredients.length)];
 
@@ -136,19 +159,20 @@ class GameState extends ChangeNotifier {
           type: MarketEventType.inDemand,
           title: 'In Demand: ${ingredient.name}',
           description:
-              '${ingredient.name} is in high demand. Potions using it gain +2 PP.',
+              '${ingredient.name} is in high demand. Potions using it gain +2 PP!',
           ingredientId: ingredient.id,
           bonusOrPenalty: 2,
         );
         break;
       case 2:
+        final location = getIngredientLocation(ingredient.id);
         _currentMarketEvent = MarketEvent(
           type: MarketEventType.surplus,
-          title: 'Surplus: ${ingredient.name}',
+          title: 'Ingredient Overflow at $location',
           description:
-              '${ingredient.name} is flooding the market. Potions using it lose 1 PP (minimum 0).',
+              'Ingredients are overflowing at $location! Take 2 ingredients instead of 1 this turn.',
           ingredientId: ingredient.id,
-          bonusOrPenalty: -1,
+          locationName: location,
         );
         break;
       default:
@@ -156,7 +180,7 @@ class GameState extends ChangeNotifier {
           type: MarketEventType.folly,
           title: 'Folly Ingredient: ${ingredient.name}',
           description:
-              'If a brew fails and contains ${ingredient.name}, the alchemist suffers -2 PP.',
+              'If a brew fails and contains ${ingredient.name}, the alchemist suffers -2 PP!',
           ingredientId: ingredient.id,
           bonusOrPenalty: -2,
         );
@@ -173,17 +197,12 @@ class GameState extends ChangeNotifier {
   bool nextTurn() {
     final oldRound = currentRound;
 
-    // --- your existing "advance turn" logic below ---
-    // This part assumes you already have:
-    //   - players
-    //   - currentPlayerIndex
-    //   - currentRound
-    //   - maxRounds
-    //   - isGameOver flag, etc.
-
     if (players.isEmpty) {
       return false;
     }
+
+    // reset AP for new turn
+    _currentAP = apPerTurn;
 
     // move to next player
     _currentPlayerIndex++;
@@ -193,12 +212,9 @@ class GameState extends ChangeNotifier {
       _currentPlayerIndex = 0;
       _currentRound++;
 
-      // if you have per-round setup (new AP, new market event, etc),
-      // make sure you call it here:
       _startNewRoundIfNeeded();
     }
 
-    // check for game over condition
     if (!isGameOver) {
       _rollMarketEvent();
     }
@@ -209,222 +225,242 @@ class GameState extends ChangeNotifier {
     return startedNewRound;
   }
 
-  /// Optional helper if you already had round setup logic somewhere.
-  /// If you don't use it, just inline and delete this.
   void _startNewRoundIfNeeded() {
-    // example:
-    // currentAP = baseAPPerRound;
-    // rollMarketConditionForRound();
+    _currentAP = apPerTurn;
   }
 
   // ---------------------------------------------------------------------------
   // BREWING
   // ---------------------------------------------------------------------------
-BrewResult brew({
-  required String? herbName,
-  required String? mineralName,
-  required String? creatureName,
-  required String? essenceName,
-  required bool useStardust,
-}) {
-  if (_players.isEmpty) {
-    return const BrewResult(
-      success: false,
-      message: 'No players have joined the game yet.',
-      potion: null,
-      basePoints: 0,
-      bonusPoints: 0,
-      totalPoints: 0,
-      isSecretPotion: false,
-      triggeredFolly: false,
-      apSpent: 0,
-    );
-  }
+  BrewResult brew({
+    required String? herbName,
+    required String? mineralName,
+    required String? creatureName,
+    required String? essenceName,
+    required bool useStardust,
+  }) {
+    if (_players.isEmpty) {
+      return const BrewResult(
+        success: false,
+        message: 'No players have joined the game yet.',
+        potion: null,
+        basePoints: 0,
+        bonusPoints: 0,
+        totalPoints: 0,
+        isSecretPotion: false,
+        triggeredFolly: false,
+        apSpent: 0,
+      );
+    }
 
-  if (_currentAP < 2) {
-    return const BrewResult(
-      success: false,
-      message: 'Not enough AP. You need 2 AP to brew.',
-      potion: null,
-      basePoints: 0,
-      bonusPoints: 0,
-      totalPoints: 0,
-      isSecretPotion: false,
-      triggeredFolly: false,
-      apSpent: 0,
-    );
-  }
-
-  // Check Stardust availability if trying to use it
-  if (useStardust && currentPlayer.stardust < 1) {
-    return const BrewResult(
-      success: false,
-      message:
-          'Not enough Stardust. You need 1 Stardust to attempt a secret potion.',
-      potion: null,
-      basePoints: 0,
-      bonusPoints: 0,
-      totalPoints: 0,
-      isSecretPotion: false,
-      triggeredFolly: false,
-      apSpent: 0,
-    );
-  }
-
-  final herb = ingredientByName(herbName);
-  final mineral = ingredientByName(mineralName);
-  final creature = ingredientByName(creatureName);
-  final essence = ingredientByName(essenceName);
-
-  if (herb == null || mineral == null || creature == null || essence == null) {
-    return const BrewResult(
-      success: false,
-      message: 'Choose one ingredient from each category before brewing.',
-      potion: null,
-      basePoints: 0,
-      bonusPoints: 0,
-      totalPoints: 0,
-      isSecretPotion: false,
-      triggeredFolly: false,
-      apSpent: 0,
-    );
-  }
-
-  // Start with normal potion match
-  Potion? potion = findPotionMatch(
-    herbId: herb.id,
-    mineralId: mineral.id,
-    creatureId: creature.id,
-    essenceId: essence.id,
-  );
-
-  int base = 0;
-  int bonus = 0;
-  bool isSecret = false;
-  bool follyPenalty = false;
-  String message = '';
-
-  // ------------------------------------------------------------------
-  // 1) STARDUST SECRET CHECK – ONLY Stardust can unlock the secret
-  // ------------------------------------------------------------------
-  if (useStardust && _secretPotion != null) {
-    int matches = 0;
-    if (herb.id == _secretPotion!.herbId) matches++;
-    if (mineral.id == _secretPotion!.mineralId) matches++;
-    if (creature.id == _secretPotion!.creatureId) matches++;
-    if (essence.id == _secretPotion!.essenceId) matches++;
-
-    if (matches >= 3) {
-      // Even if this was brewed before as a normal potion,
-      // this time Stardust "reveals" it as the secret potion.
-      potion = _secretPotion;
-      isSecret = true;
-
+    if (_currentAP < 2) {
       if (kDebugMode) {
-        debugPrint(
-          '✨ STARDUST SECRET DISCOVERY by ${currentPlayer.name}: '
-          '${potion!.name} with $matches/4 matches',
-        );
+        debugPrint(' BREW FAILED: Not enough AP (have $_currentAP, need 2)');
+      }
+      return const BrewResult(
+        success: false,
+        message: 'Not enough AP. You need 2 AP to brew.',
+        potion: null,
+        basePoints: 0,
+        bonusPoints: 0,
+        totalPoints: 0,
+        isSecretPotion: false,
+        triggeredFolly: false,
+        apSpent: 0,
+      );
+    }
+
+    // stardust check
+    if (useStardust && currentPlayer.stardust < 1) {
+      return const BrewResult(
+        success: false,
+        message:
+            'Not enough Stardust. You need 1 Stardust to attempt a secret potion.',
+        potion: null,
+        basePoints: 0,
+        bonusPoints: 0,
+        totalPoints: 0,
+        isSecretPotion: false,
+        triggeredFolly: false,
+        apSpent: 0,
+      );
+    }
+
+    final herb = ingredientByName(herbName);
+    final mineral = ingredientByName(mineralName);
+    final creature = ingredientByName(creatureName);
+    final essence = ingredientByName(essenceName);
+
+    if (herb == null ||
+        mineral == null ||
+        creature == null ||
+        essence == null) {
+      return const BrewResult(
+        success: false,
+        message: 'Choose one ingredient from each category before brewing.',
+        potion: null,
+        basePoints: 0,
+        bonusPoints: 0,
+        totalPoints: 0,
+        isSecretPotion: false,
+        triggeredFolly: false,
+        apSpent: 0,
+      );
+    }
+
+    // debug
+    if (kDebugMode) {
+      debugPrint(' BREW ATTEMPT:');
+      debugPrint('  Herb: ${herb.name} (${herb.id})');
+      debugPrint('  Mineral: ${mineral.name} (${mineral.id})');
+      debugPrint('  Creature: ${creature.name} (${creature.id})');
+      debugPrint('  Essence: ${essence.name} (${essence.id})');
+    }
+
+    Potion? potion = findPotionMatch(
+      herbId: herb.id,
+      mineralId: mineral.id,
+      creatureId: creature.id,
+      essenceId: essence.id,
+    );
+
+    if (kDebugMode) {
+      debugPrint('  Found potion: ${potion?.name ?? 'None'}');
+      if (potion != null) {
+        debugPrint('  Expected points: ${potion.points}');
       }
     }
-  }
 
-  // ------------------------------------------------------------------
-  // 2) NORMAL POTION + MARKET EFFECTS
-  // ------------------------------------------------------------------
-  if (potion != null) {
-    base = potion.points;
+    int base = 0;
+    int bonus = 0;
+    bool isSecret = false;
+    bool follyPenalty = false;
+    String message = '';
 
-    // Market effects
-    if (_currentMarketEvent.type == MarketEventType.inDemand &&
-        _currentMarketEvent.ingredientId != null &&
-        [
-          herb.id,
-          mineral.id,
-          creature.id,
-          essence.id,
-        ].contains(_currentMarketEvent.ingredientId)) {
-      bonus += 2;
-    } else if (_currentMarketEvent.type == MarketEventType.surplus &&
-        _currentMarketEvent.ingredientId != null &&
-        [
-          herb.id,
-          mineral.id,
-          creature.id,
-          essence.id,
-        ].contains(_currentMarketEvent.ingredientId)) {
-      bonus -= 1;
+    // ------------------------------------------------------------------
+    // 1) STARDUST SECRET CHECK – ONLY Stardust can unlock the secret
+    // ------------------------------------------------------------------
+    if (useStardust && _secretPotion != null) {
+      int matches = 0;
+      if (herb.id == _secretPotion!.herbId) matches++;
+      if (mineral.id == _secretPotion!.mineralId) matches++;
+      if (creature.id == _secretPotion!.creatureId) matches++;
+      if (essence.id == _secretPotion!.essenceId) matches++;
+
+      if (matches >= 3) {
+        potion = _secretPotion;
+        isSecret = true;
+
+        if (kDebugMode) {
+          debugPrint(
+            ' STARDUST SECRET DISCOVERY by ${currentPlayer.name}: '
+            '${potion!.name} with $matches/4 matches',
+          );
+        }
+      }
     }
 
-    if (isSecret) {
-      // Secret ONLY when Stardust path triggered above
-      bonus += 3; // secret bonus
-      currentPlayer.discoveredSecretPotion = true;
-      _secretFound = true;
-      _winner = currentPlayer;
+    // ------------------------------------------------------------------
+    // 2) NORMAL POTION + MARKET EFFECTS
+    // ------------------------------------------------------------------
+    if (potion != null) {
+      base = potion.points;
 
-      message =
-          'The Stardust guides your hand! You brewed the secret ${potion.name}!';
+      // market effects
+      if (_currentMarketEvent.type == MarketEventType.inDemand &&
+          _currentMarketEvent.ingredientId != null &&
+          [
+            herb.id,
+            mineral.id,
+            creature.id,
+            essence.id,
+          ].contains(_currentMarketEvent.ingredientId)) {
+        bonus += 2;
+      }
+
+      if (isSecret) {
+        currentPlayer.discoveredSecretPotion = true;
+        _secretFound = true;
+        _winner = currentPlayer;
+
+        message =
+            'The Stardust guides your hand! You brewed the secret ${potion.name}!';
+      } else {
+        message = 'You brewed ${potion.name}!';
+      }
+
+      if (base + bonus < 0) {
+        bonus = -base;
+      }
+
+      brewedPotionIds.add(potion.id);
     } else {
-      // Just a normal potion, even if it's the same recipe as _secretPotion
-      message = 'You brewed ${potion.name}!';
+      // ----------------------------------------------------------------
+      // 3) TOTAL FAIL – no potion & no Stardust secret
+      // ----------------------------------------------------------------
+      message =
+          'The mixture fizzles into useless sludge. The Trial Masters are not impressed.';
+      base = 0;
+
+      if (_currentMarketEvent.type == MarketEventType.folly &&
+          _currentMarketEvent.ingredientId != null &&
+          [
+            herb.id,
+            mineral.id,
+            creature.id,
+            essence.id,
+          ].contains(_currentMarketEvent.ingredientId)) {
+        bonus -= 2;
+        follyPenalty = true;
+      }
     }
 
-    // Don’t go below 0 total PP for a successful potion
-    if (base + bonus < 0) {
-      bonus = -base;
+    final total = base + bonus;
+
+    if (kDebugMode) {
+      debugPrint('  POINTS CALCULATION:');
+      debugPrint('    Base points: $base');
+      debugPrint('    Bonus points: $bonus');
+      debugPrint('    Total points: $total');
+      debugPrint(
+          '    Player ${currentPlayer.name} prestige before: ${currentPlayer.prestige}');
     }
 
-    brewedPotionIds.add(potion.id);
-  } else {
-    // ----------------------------------------------------------------
-    // 3) TOTAL FAIL – no potion & no Stardust secret
-    // ----------------------------------------------------------------
-    message =
-        'The mixture fizzles into useless sludge. The Trial Masters are not impressed.';
-    base = 0;
-
-    if (_currentMarketEvent.type == MarketEventType.folly &&
-        _currentMarketEvent.ingredientId != null &&
-        [
-          herb.id,
-          mineral.id,
-          creature.id,
-          essence.id,
-        ].contains(_currentMarketEvent.ingredientId)) {
-      bonus -= 2;
-      follyPenalty = true;
+    // award points
+    final player = currentPlayer;
+    player.prestige += total;
+    if (potion != null) {
+      player.potionsBrewed++;
     }
+
+    if (kDebugMode) {
+      debugPrint(
+          '    Player ${currentPlayer.name} prestige after: ${currentPlayer.prestige}');
+    }
+
+    _currentAP -= 2;
+    if (useStardust) {
+      player.stardust -= 1;
+    }
+
+    if (kDebugMode) {
+      debugPrint('    AP after brewing: $_currentAP');
+    }
+
+    notifyListeners();
+
+    return BrewResult(
+      success: potion != null,
+      message: message,
+      potion: potion,
+      basePoints: base,
+      bonusPoints: bonus,
+      totalPoints: total,
+      isSecretPotion: isSecret,
+      triggeredFolly: follyPenalty,
+      apSpent: 2,
+    );
   }
-
-  final total = base + bonus;
-
-  // Apply to current player
-  final player = currentPlayer;
-  player.prestige += total;
-  if (potion != null) {
-    player.potionsBrewed++;
-  }
-
-  _currentAP -= 2;
-  if (useStardust) {
-    player.stardust -= 1;
-  }
-
-  notifyListeners();
-
-  return BrewResult(
-    success: potion != null,
-    message: message,
-    potion: potion,
-    basePoints: base,
-    bonusPoints: bonus,
-    totalPoints: total,
-    isSecretPotion: isSecret,
-    triggeredFolly: follyPenalty,
-    apSpent: 2,
-  );
-}
 
   // ---------------------------------------------------------------------------
   // SHOPPING

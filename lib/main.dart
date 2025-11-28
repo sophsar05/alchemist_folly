@@ -16,7 +16,7 @@ import 'screens/library_hint_screen.dart';
 import 'screens/library_hint_view.dart';
 import 'screens/market_screen.dart';
 import 'screens/secret_reveal_screen.dart';
-import 'screens/end_game_screen.dart';
+import 'screens/end_game_flow_screen.dart';
 
 void main() {
   runApp(const AlchemistFollyApp());
@@ -49,8 +49,7 @@ class AlchemistFollyApp extends StatelessWidget {
           LibraryHintView.routeName: (_) => const LibraryHintView(),
           MarketScreen.routeName: (_) => const MarketScreen(),
           SecretRevealScreen.routeName: (_) => const SecretRevealScreen(),
-          EndGameScreen.routeName: (_) => const EndGameScreen(),
-          PotionListScreen.routeName: (_) => const PotionListScreen(),
+          EndGameFlowScreen.routeName: (_) => const EndGameFlowScreen(),
         },
       ),
     );

@@ -23,15 +23,15 @@ class _MarketScreenState extends State<MarketScreen> {
 
   static const Map<String, String> _ingredientDescriptions = {
     // herbs
-    'moonleaf': 'calming, soothing plant used in sleep and vision potions',
+    'moonleaf': 'calming plant used in sleep potions',
     'emberroot': 'fiery root that adds warmth or energy',
     'frostmint': 'icy herb that chills or preserves',
     'nightshade': 'toxic but powerful for dark brews',
     // minerals
     'crystal_dust': 'amplifies other ingredients',
     'iron_shard': 'adds strength or durability',
-    'sulfur_stone': 'unstable, used for explosive or reactive effects',
-    'blue_ore': 'mystical mineral used in dream and illusion potions',
+    'sulfur_stone': 'unstable, used for reactive effects',
+    'blue_ore': 'mystical mineral used in dream potions',
     // creature Parts
     'dragon_scale': 'gives power and protection',
     'phoenix_feather': 'healing and renewal properties',
@@ -250,9 +250,8 @@ class _MarketScreenState extends State<MarketScreen> {
               ),
               PrimaryButton(
                 label: 'Purchase',
-                onPressed: (canAfford )
-                    ? () => _makePurchase(context, game)
-                    : () {},
+                onPressed:
+                    (canAfford) ? () => _makePurchase(context, game) : () {},
               ),
             ],
           ),
@@ -283,6 +282,36 @@ class _MarketScreenState extends State<MarketScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Ingredient image
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: backgroundColor.withValues(alpha: 0.5),
+                  width: 2,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.asset(
+                  ingredientAsset(ingredient.id),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: backgroundColor.withValues(alpha: 0.3),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: backgroundColor,
+                        size: 30,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,13 +469,6 @@ class _MarketScreenState extends State<MarketScreen> {
           height: 15,
           fit: BoxFit.contain,
         );
-      case MarketEventType.surplus:
-        return Image.asset(
-          'assets/images/surplus-vector.png',
-          width: 15,
-          height: 15,
-          fit: BoxFit.contain,
-        );
       default:
         return null;
     }
@@ -576,9 +598,8 @@ class _MarketScreenState extends State<MarketScreen> {
               ),
               PrimaryButton(
                 label: 'Trade',
-                onPressed: (hasIngredients)
-                    ? () => _makeTrade(context, game)
-                    : () {},
+                onPressed:
+                    (hasIngredients) ? () => _makeTrade(context, game) : () {},
               ),
             ],
           ),
@@ -610,6 +631,36 @@ class _MarketScreenState extends State<MarketScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // ingredient image
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: backgroundColor.withValues(alpha: 0.5),
+                  width: 2,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.asset(
+                  ingredientAsset(ingredient.id),
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: backgroundColor.withValues(alpha: 0.3),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: backgroundColor,
+                        size: 30,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
