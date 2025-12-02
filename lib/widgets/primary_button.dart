@@ -26,11 +26,14 @@ class PrimaryButton extends StatelessWidget {
         ),
       ),
       onPressed: onPressed,
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontFamily: 'Pixel Game',
-          fontSize: 18,
+      child: Center(
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: 'Pixel Game',
+            fontSize: 18,
+          ),
         ),
       ),
     );
