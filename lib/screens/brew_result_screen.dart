@@ -46,6 +46,7 @@ class BrewResultScreen extends StatelessWidget {
     final game = context.watch<GameState>();
     final currentRound = game.currentRound;
     final hasBonus = (result.bonusPoints ?? 0) > 0;
+    final hasPenalty = (result.bonusPoints ?? 0) < 0;
 
     // Colors from your Figma
     const cream = Color(0xFFFFF6E3);
@@ -141,7 +142,8 @@ class BrewResultScreen extends StatelessWidget {
                         : Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
                             child: Text(
-                              _failMessages[currentRound % _failMessages.length],
+                              _failMessages[
+                                  currentRound % _failMessages.length],
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontFamily: 'Pixel Game',
@@ -164,134 +166,189 @@ class BrewResultScreen extends StatelessWidget {
                           ),
 
                     // ---------- POINTS + POTION IMAGE ROW -------------
-                    SizedBox(
-                      height: 260,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // LEFT: base points
-                          SizedBox(
-                            width: 130,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '+${result.basePoints}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Pixel Game',
-                                    fontSize: 86,
-                                    height: 0.71,
-                                    letterSpacing: -0.01,
-                                    color: cream,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 18.0,
-                                        color: Colors.black,
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 500),
+                        child: SizedBox(
+                          height: 260,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // LEFT: base points
+                              SizedBox(
+                                width: 130,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '+${result.basePoints}',
+                                      style: const TextStyle(
+                                        fontFamily: 'Pixel Game',
+                                        fontSize: 86,
+                                        height: 0.71,
+                                        letterSpacing: -0.01,
+                                        color: cream,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 18.0,
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            blurRadius: 18.0,
+                                            color: Colors.black,
+                                          ),
+                                        ],
                                       ),
-                                      Shadow(
-                                        blurRadius: 18.0,
-                                        color: Colors.black,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const Text(
+                                      'POINTS!',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'Pixel Game',
+                                        fontSize: 32,
+                                        height: 0.71,
+                                        letterSpacing: -0.01,
+                                        color: cream,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 6.6,
+                                            color: Colors.black,
+                                          ),
+                                          Shadow(
+                                            blurRadius: 6.6,
+                                            color: Colors.black,
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  'POINTS!',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontFamily: 'Pixel Game',
-                                    fontSize: 32,
-                                    height: 0.71,
-                                    letterSpacing: -0.01,
-                                    color: cream,
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 6.6,
-                                        color: Colors.black,
-                                      ),
-                                      Shadow(
-                                        blurRadius: 6.6,
-                                        color: Colors.black,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // CENTER: potion image
-                          Expanded(
-                            child: Center(
-                              child: SizedBox(
-                                width: 220,
-                                height: 220,
-                                child: Image.asset(
-                                  'assets/images/potion.png',
-                                  fit: BoxFit.contain,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
-                          ),
 
-                          // RIGHT: bonus points (only if any)
-                          SizedBox(
-                            width: 130,
-                            child: hasBonus
-                                ? Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        '+${result.bonusPoints}',
-                                        style: const TextStyle(
-                                          fontFamily: 'Pixel Game',
-                                          fontSize: 66,
-                                          height: 0.71,
-                                          letterSpacing: -0.01,
-                                          color: Color(0xFFFFDB8D),
-                                          shadows: [
-                                            Shadow(
-                                              blurRadius: 13.9,
-                                              color: Colors.black,
+                              // CENTER: potion image
+                              Expanded(
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 220,
+                                    height: 220,
+                                    child: Image.asset(
+                                      'assets/images/potion.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              // RIGHT: bonus or penalty points
+                              SizedBox(
+                                width: 130,
+                                child: hasBonus
+                                    ? Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '+${result.bonusPoints}',
+                                            style: const TextStyle(
+                                              fontFamily: 'Pixel Game',
+                                              fontSize: 66,
+                                              height: 0.71,
+                                              letterSpacing: -0.01,
+                                              color: Color(0xFFFFDB8D),
+                                              shadows: [
+                                                Shadow(
+                                                  blurRadius: 13.9,
+                                                  color: Colors.black,
+                                                ),
+                                                Shadow(
+                                                  blurRadius: 13.9,
+                                                  color: Colors.black,
+                                                ),
+                                              ],
                                             ),
-                                            Shadow(
-                                              blurRadius: 13.9,
-                                              color: Colors.black,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          const Text(
+                                            'POINTS FOR USING\nIN-DEMAND\nINGREDIENTS!',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontFamily: 'Pixel Game',
+                                              fontSize: 14,
+                                              height: 0.9,
+                                              letterSpacing: -0.01,
+                                              color: cream,
+                                              shadows: [
+                                                Shadow(
+                                                  blurRadius: 6.1,
+                                                  color: Colors.black,
+                                                ),
+                                                Shadow(
+                                                  blurRadius: 6.1,
+                                                  color: Colors.black,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      const Text(
-                                        'POINTS FOR USING\nIN-DEMAND\nINGREDIENTS!',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontFamily: 'Pixel Game',
-                                          fontSize: 14,
-                                          height: 0.9,
-                                          letterSpacing: -0.01,
-                                          color: cream,
-                                          shadows: [
-                                            Shadow(
-                                              blurRadius: 6.1,
-                                              color: Colors.black,
-                                            ),
-                                            Shadow(
-                                              blurRadius: 6.1,
-                                              color: Colors.black,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                : const SizedBox.shrink(),
+                                          ),
+                                        ],
+                                      )
+                                    : hasPenalty
+                                        ? Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                '${result.bonusPoints}',
+                                                style: const TextStyle(
+                                                  fontFamily: 'Pixel Game',
+                                                  fontSize: 66,
+                                                  height: 0.71,
+                                                  letterSpacing: -0.01,
+                                                  color: Color(0xFFEF4444),
+                                                  shadows: [
+                                                    Shadow(
+                                                      blurRadius: 13.9,
+                                                      color: Colors.black,
+                                                    ),
+                                                    Shadow(
+                                                      blurRadius: 13.9,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              const Text(
+                                                'PP PENALTY FOR USING\nFOLLY\nINGREDIENT!',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontFamily: 'Pixel Game',
+                                                  fontSize: 20,
+                                                  height: 0.9,
+                                                  letterSpacing: -0.01,
+                                                  color: cream,
+                                                  shadows: [
+                                                    Shadow(
+                                                      blurRadius: 6.1,
+                                                      color: Colors.black,
+                                                    ),
+                                                    Shadow(
+                                                      blurRadius: 6.1,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : const SizedBox.shrink(),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
 

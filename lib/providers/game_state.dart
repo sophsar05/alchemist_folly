@@ -196,7 +196,6 @@ class GameState extends ChangeNotifier {
       return false;
     }
 
-
     // move to next player
     _currentPlayerIndex++;
 
@@ -458,7 +457,7 @@ class GameState extends ChangeNotifier {
   // BLACK MARKET
   // ---------------------------------------------------------------------------
 
-  /// The Fence: Trade any two of your basic ingredient tokens back to the 
+  /// The Fence: Trade any two of your basic ingredient tokens back to the
   /// supply to take one basic ingredient of your choice.
   String? useFenceTrade(
       Map<String, int> ingredientsToTrade, String receivedIngredientId) {
@@ -480,7 +479,7 @@ class GameState extends ChangeNotifier {
     return null; // No error, trade successful
   }
 
-  /// The Smuggler: Trade one of each of three different basic ingredients 
+  /// The Smuggler: Trade one of each of three different basic ingredients
   /// (e.g., 1 Red, 1 Blue, 1 Black) to acquire one rare Stardust token.
   String? useSmugglerTrade(Map<String, int> ingredientsToTrade) {
     int totalIngredients = 0;

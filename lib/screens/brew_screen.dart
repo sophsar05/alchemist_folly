@@ -59,8 +59,14 @@ class _BrewScreenState extends State<BrewScreen> {
     final marketEvent = game.currentMarketEvent;
 
     final player = game.currentPlayer;
+    // Only show boost badge for inDemand events, NOT folly
+    final bool isInDemandEvent = marketEvent.type == MarketEventType.inDemand;
+    final bool isFollyEvent = marketEvent.type == MarketEventType.folly;
     // Treat this as an ingredient *ID*, not name
-    final String? boostedIngredientId = marketEvent.ingredientId;
+    final String? boostedIngredientId = 
+        isInDemandEvent ? marketEvent.ingredientId : null;
+    final String? follyIngredientId =
+        isFollyEvent ? marketEvent.ingredientId : null;
     const iconColors = [
       Color.fromARGB(255, 180, 67, 67), // Player 1 - red 0xFF983333
       Color.fromARGB(255, 42, 210, 240), // Player 2 - blue
@@ -154,6 +160,7 @@ class _BrewScreenState extends State<BrewScreen> {
                             names: creatures,
                             selectedIndex: _creatureIndex,
                             boostedIngredientId: boostedIngredientId,
+                            follyIngredientId: follyIngredientId,
                             onTapIndex: (i) {
                               setState(() {
                                 _creatureIndex =
@@ -174,6 +181,7 @@ class _BrewScreenState extends State<BrewScreen> {
                             names: minerals,
                             selectedIndex: _mineralIndex,
                             boostedIngredientId: boostedIngredientId,
+                            follyIngredientId: follyIngredientId,
                             onTapIndex: (i) {
                               setState(() {
                                 _mineralIndex = (_mineralIndex == i) ? null : i;
@@ -193,6 +201,7 @@ class _BrewScreenState extends State<BrewScreen> {
                             names: herbs,
                             selectedIndex: _herbIndex,
                             boostedIngredientId: boostedIngredientId,
+                            follyIngredientId: follyIngredientId,
                             onTapIndex: (i) {
                               setState(() {
                                 _herbIndex = (_herbIndex == i) ? null : i;
@@ -212,6 +221,7 @@ class _BrewScreenState extends State<BrewScreen> {
                             names: essences,
                             selectedIndex: _essenceIndex,
                             boostedIngredientId: boostedIngredientId,
+                            follyIngredientId: follyIngredientId,
                             onTapIndex: (i) {
                               setState(() {
                                 _essenceIndex = (_essenceIndex == i) ? null : i;
@@ -373,7 +383,8 @@ class _IngredientRow extends StatelessWidget {
   final List<Color> colors; // 4 colors for the 4 tiles
   final List<String> names; // 4 ingredient names (display)
   final int? selectedIndex;
-  final String? boostedIngredientId; // from MarketEvent
+  final String? boostedIngredientId; // from MarketEvent (inDemand)
+  final String? follyIngredientId; // from MarketEvent (folly)
   final ValueChanged<int> onTapIndex;
 
   const _IngredientRow({
@@ -381,6 +392,7 @@ class _IngredientRow extends StatelessWidget {
     required this.names,
     required this.selectedIndex,
     required this.boostedIngredientId,
+    required this.follyIngredientId,
     required this.onTapIndex,
   });
 
@@ -394,6 +406,8 @@ class _IngredientRow extends StatelessWidget {
         final bool isSelected = selectedIndex == i;
         final bool showBoostBadge =
             boostedIngredientId != null && boostedIngredientId == ingredientId;
+        final bool showFollyBadge =
+            follyIngredientId != null && follyIngredientId == ingredientId;
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -405,6 +419,7 @@ class _IngredientRow extends StatelessWidget {
                 ingredientId: ingredientId,
                 isSelected: isSelected,
                 showBoostBadge: showBoostBadge,
+                showFollyBadge: showFollyBadge,
                 onTap: () => onTapIndex(i),
               ),
               const SizedBox(height: 4),
@@ -440,6 +455,7 @@ class _IngredientTile extends StatelessWidget {
   final String ingredientId;
   final bool isSelected;
   final bool showBoostBadge;
+  final bool showFollyBadge;
   final VoidCallback onTap;
 
   const _IngredientTile({
@@ -447,6 +463,7 @@ class _IngredientTile extends StatelessWidget {
     required this.ingredientId,
     required this.isSelected,
     required this.showBoostBadge,
+    required this.showFollyBadge,
     required this.onTap,
   });
 
@@ -505,6 +522,32 @@ class _IngredientTile extends StatelessWidget {
                       Icons.thumb_up,
                       size: 14,
                       color: Color(0xFF983333),
+                    ),
+                  ),
+                ),
+              ),
+
+            // Skull/Warning badge for folly ingredient
+            if (showFollyBadge)
+              Positioned(
+                left: -8,
+                top: -8,
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFF351B10),
+                      width: 3,
+                    ),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.warning,
+                      size: 14,
+                      color: Color(0xFFFFF6E3),
                     ),
                   ),
                 ),
@@ -593,7 +636,7 @@ class _StardustScrollButton extends StatelessWidget {
                         width: 50,
                         height: 50,
                         child: Image.asset(
-                          'assets/images/ingredients/stardust.png',
+                          'assets/images/ingredients/special/stardust.png',
                           fit: BoxFit.cover,
                         ),
                       ),
