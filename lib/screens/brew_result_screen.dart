@@ -12,6 +12,17 @@ class BrewResultScreen extends StatelessWidget {
 
   const BrewResultScreen({super.key});
 
+  static const List<String> _failMessages = [
+    'Your cauldron belches pink smoke...\nnothing happens.',
+    'The mixture bubbles ominously,\nthen goes completely flat.',
+    'A foul stench fills the air.\nPerhaps try a different recipe?',
+    'The potion evaporates instantly.\nBack to the drawing board!',
+    'Your brew turns into a lump of coal.\nAt least it\'s warm?',
+    'The cauldron makes a sad gurgling sound\nand produces... water.',
+    'A ghostly voice whispers:\n"That\'s not how you make potions..."',
+    'The ingredients reject each other\nand leap out of the cauldron!',
+  ];
+
   @override
   Widget build(BuildContext context) {
     final result = ModalRoute.of(context)!.settings.arguments as BrewResult?;
@@ -104,28 +115,53 @@ class BrewResultScreen extends StatelessWidget {
 
                     const SizedBox(height: 130),
 
-                    // ---------------- POTION NAME ---------------------
-                    Text(
-                      (result.potion?.name ?? 'Potion').toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 50,
-                        height: 0.71,
-                        letterSpacing: -0.01,
-                        color: cream,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.7,
-                            color: Colors.black,
+                    // ---------------- POTION NAME / FAIL MESSAGE ---------------------
+                    result.basePoints > 0
+                        ? Text(
+                            (result.potion?.name ?? 'Potion').toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'Pixel Game',
+                              fontSize: 50,
+                              height: 0.71,
+                              letterSpacing: -0.01,
+                              color: cream,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10.7,
+                                  color: Colors.black,
+                                ),
+                                Shadow(
+                                  blurRadius: 10.7,
+                                  color: Colors.black,
+                                ),
+                              ],
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Text(
+                              _failMessages[currentRound % _failMessages.length],
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontFamily: 'Pixel Game',
+                                fontSize: 30,
+                                height: 1.1,
+                                letterSpacing: -0.01,
+                                color: Color(0xFFEF4444),
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 8.0,
+                                    color: Colors.black,
+                                  ),
+                                  Shadow(
+                                    blurRadius: 8.0,
+                                    color: Colors.black,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          Shadow(
-                            blurRadius: 10.7,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
 
                     // ---------- POINTS + POTION IMAGE ROW -------------
                     SizedBox(

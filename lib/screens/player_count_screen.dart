@@ -38,9 +38,12 @@ class _PlayerCountScreenState extends State<PlayerCountScreen> {
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_default.png',
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
             children: [
               const SizedBox(height: 150),
 
@@ -132,18 +135,20 @@ class _PlayerCountScreenState extends State<PlayerCountScreen> {
 
               const SizedBox(height: 50),
 
-              SizedBox(
-                width: 120,
-                height: 40,
-                child: PrimaryButton(
-                  label: 'PROCEED',
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      PlayerNamesScreen.routeName,
-                      arguments: _playerCount,
-                    );
-                  },
+              Center(
+                child: SizedBox(
+                  width: 140,
+                  height: 45,
+                  child: PrimaryButton(
+                    label: 'PROCEED',
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        PlayerNamesScreen.routeName,
+                        arguments: _playerCount,
+                      );
+                    },
+                  ),
                 ),
               ),
 
@@ -155,6 +160,8 @@ class _PlayerCountScreenState extends State<PlayerCountScreen> {
             ],
           ),
         ),
+      ),
+      ),
       ),
     );
   }

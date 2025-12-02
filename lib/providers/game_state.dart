@@ -8,14 +8,12 @@ import '../game_logic/game_models.dart';
 
 class GameState extends ChangeNotifier {
   static const int maxRounds = 100;
-  static const int apPerTurn = 2;
 
   final Random _random = Random();
 
   final List<Player> _players = [];
   int _currentPlayerIndex = 0;
   int _currentRound = 1;
-  int _currentAP = apPerTurn;
 
   Player? _winner;
   bool _secretFound = false;
@@ -43,7 +41,6 @@ class GameState extends ChangeNotifier {
 
   List<Player> get players => List.unmodifiable(_players);
   int get currentRound => _currentRound;
-  int get currentAP => _currentAP;
 
   Player get currentPlayer {
     if (_players.isEmpty) {
@@ -85,7 +82,6 @@ class GameState extends ChangeNotifier {
     _players.clear();
     _currentPlayerIndex = 0;
     _currentRound = 1;
-    _currentAP = apPerTurn;
     _secretPotion = null;
     _currentMarketEvent = MarketEvent.calm;
     _marketEventTurnsRemaining = 0;
@@ -110,7 +106,6 @@ class GameState extends ChangeNotifier {
 
     _currentPlayerIndex = 0;
     _currentRound = 1;
-    _currentAP = apPerTurn;
 
     // Pick a secret potion from the allowed candidates.
     _secretPotion = pickRandomSecretPotion(_random);
@@ -201,8 +196,6 @@ class GameState extends ChangeNotifier {
       return false;
     }
 
-    // reset AP for new turn
-    _currentAP = apPerTurn;
 
     // move to next player
     _currentPlayerIndex++;
@@ -226,7 +219,7 @@ class GameState extends ChangeNotifier {
   }
 
   void _startNewRoundIfNeeded() {
-    _currentAP = apPerTurn;
+    // Round start logic
   }
 
   // ---------------------------------------------------------------------------
@@ -243,23 +236,6 @@ class GameState extends ChangeNotifier {
       return const BrewResult(
         success: false,
         message: 'No players have joined the game yet.',
-        potion: null,
-        basePoints: 0,
-        bonusPoints: 0,
-        totalPoints: 0,
-        isSecretPotion: false,
-        triggeredFolly: false,
-        apSpent: 0,
-      );
-    }
-
-    if (_currentAP < 2) {
-      if (kDebugMode) {
-        debugPrint(' BREW FAILED: Not enough AP (have $_currentAP, need 2)');
-      }
-      return const BrewResult(
-        success: false,
-        message: 'Not enough AP. You need 2 AP to brew.',
         potion: null,
         basePoints: 0,
         bonusPoints: 0,
@@ -438,13 +414,8 @@ class GameState extends ChangeNotifier {
           '    Player ${currentPlayer.name} prestige after: ${currentPlayer.prestige}');
     }
 
-    _currentAP -= 2;
     if (useStardust) {
       player.stardust -= 1;
-    }
-
-    if (kDebugMode) {
-      debugPrint('    AP after brewing: $_currentAP');
     }
 
     notifyListeners();
@@ -466,15 +437,7 @@ class GameState extends ChangeNotifier {
   // SHOPPING
   // ---------------------------------------------------------------------------
 
-  bool canShop() {
-    return _currentAP >= 1 && _players.isNotEmpty;
-  }
-
   String? shopForGoods(Map<String, int> selectedIngredients) {
-    if (!canShop()) {
-      return 'Not enough AP. You need 1 AP to shop.';
-    }
-
     int totalCost = 0;
     for (final count in selectedIngredients.values) {
       totalCost += count * 2; // Each ingredient costs 2 PP
@@ -484,8 +447,7 @@ class GameState extends ChangeNotifier {
       return 'Not enough PP. You need $totalCost PP to buy these ingredients.';
     }
 
-    // Deduct AP and PP
-    _currentAP -= 1;
+    // Deduct PP
     currentPlayer.prestige -= totalCost;
     notifyListeners();
 
@@ -493,18 +455,61 @@ class GameState extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
-  // BLACK MARKET (Stardust Trading)
+  // BLACK MARKET
   // ---------------------------------------------------------------------------
 
-  bool canTradeForStardust() {
-    return _currentAP >= 1 && _players.isNotEmpty;
-  }
-
-  String? tradeForStardust(Map<String, int> ingredientsToTrade) {
-    if (!canTradeForStardust()) {
-      return 'Not enough AP. You need 1 AP to trade at the Black Market.';
+  /// The Fence: Trade any two of your basic ingredient tokens back to the 
+  /// supply to take one basic ingredient of your choice.
+  String? useFenceTrade(
+      Map<String, int> ingredientsToTrade, String receivedIngredientId) {
+    int totalIngredients = 0;
+    for (final count in ingredientsToTrade.values) {
+      totalIngredients += count;
     }
 
+    if (totalIngredients < 2) {
+      return 'The Fence requires at least 2 ingredients to trade.';
+    }
+
+    // Deduct exactly 2 ingredients from the traded ingredients
+    // (The UI should handle only allowing 2+ to be selected)
+    // For simplicity, we trust the UI sent valid data
+
+    // Success - no actual inventory tracking, just conceptual
+    notifyListeners();
+    return null; // No error, trade successful
+  }
+
+  /// The Smuggler: Trade one of each of three different basic ingredients 
+  /// (e.g., 1 Red, 1 Blue, 1 Black) to acquire one rare Stardust token.
+  String? useSmugglerTrade(Map<String, int> ingredientsToTrade) {
+    int totalIngredients = 0;
+    int uniqueIngredients = 0;
+
+    for (final entry in ingredientsToTrade.entries) {
+      if (entry.value > 0) {
+        uniqueIngredients++;
+        totalIngredients += entry.value;
+      }
+    }
+
+    if (totalIngredients < 3) {
+      return 'The Smuggler requires at least 3 ingredients to trade.';
+    }
+
+    if (uniqueIngredients < 3) {
+      return 'The Smuggler requires 3 DIFFERENT ingredients (not multiples of the same one).';
+    }
+
+    // Award 1 Stardust
+    currentPlayer.stardust += 1;
+    notifyListeners();
+
+    return null; // No error, trade successful
+  }
+
+  // OLD BLACK MARKET METHOD (kept for backward compatibility if needed)
+  String? tradeForStardust(Map<String, int> ingredientsToTrade) {
     int totalIngredients = 0;
     for (final count in ingredientsToTrade.values) {
       totalIngredients += count;
@@ -517,8 +522,7 @@ class GameState extends ChangeNotifier {
     // Convert ingredients to Stardust (1 ingredient = 1 Stardust)
     int stardustGained = totalIngredients;
 
-    // Deduct AP and award Stardust
-    _currentAP -= 1;
+    // Award Stardust
     currentPlayer.stardust += stardustGained;
     notifyListeners();
 

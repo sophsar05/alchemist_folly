@@ -77,9 +77,12 @@ class _PlayerNamesScreenState extends State<PlayerNamesScreen> {
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_default.png',
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
             children: [
               const SizedBox(height: 150),
 
@@ -132,13 +135,14 @@ class _PlayerNamesScreenState extends State<PlayerNamesScreen> {
             ),
               const SizedBox(height: 42),
 
-
-              SizedBox(
-                width: 120,
-                height: 40,
-                child: PrimaryButton(
-                  label: 'PROCEED',
-                      onPressed: _startGame,
+              Center(
+                child: SizedBox(
+                  width: 140,
+                  height: 45,
+                  child: PrimaryButton(
+                    label: 'PROCEED',
+                    onPressed: _startGame,
+                  ),
                 ),
               ),
 
@@ -148,6 +152,8 @@ class _PlayerNamesScreenState extends State<PlayerNamesScreen> {
             ],
           ),
         ),
+      ),
+      ),
       ),
     );
   }

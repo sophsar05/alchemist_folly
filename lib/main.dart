@@ -15,6 +15,7 @@ import 'screens/potion_list_screen.dart';
 import 'screens/library_hint_screen.dart';
 import 'screens/library_hint_view.dart';
 import 'screens/market_screen.dart';
+import 'screens/black_market_screen.dart';
 import 'screens/secret_reveal_screen.dart';
 import 'screens/end_game_flow_screen.dart';
 
@@ -48,6 +49,7 @@ class AlchemistFollyApp extends StatelessWidget {
           LibraryHintScreen.routeName: (_) => const LibraryHintScreen(),
           LibraryHintView.routeName: (_) => const LibraryHintView(),
           MarketScreen.routeName: (_) => const MarketScreen(),
+          BlackMarketScreen.routeName: (_) => const BlackMarketScreen(),
           SecretRevealScreen.routeName: (_) => const SecretRevealScreen(),
           EndGameFlowScreen.routeName: (_) => const EndGameFlowScreen(),
         },

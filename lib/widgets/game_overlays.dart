@@ -172,33 +172,33 @@ void showScoreboardDialog(BuildContext context) {
                 ),
                 const SizedBox(height: 16),
                 for (var i = 0; i < players.length; i++) ...[
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 18,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: dotColors[i % dotColors.length],
-                          border: Border.all(
-                            color: const Color(0xFF351B10),
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        players[i].name,
-                        style: const TextStyle(
-                          fontFamily: 'JMH Cthulhumbus Arcade',
-                          fontSize: 22,
-                          color: Color(0xFF351B10),
-                        ),
-                      ),
-                      const Spacer(),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                      Row(
                         children: [
+                          Container(
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: dotColors[i % dotColors.length],
+                              border: Border.all(
+                                color: const Color(0xFF351B10),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            players[i].name,
+                            style: const TextStyle(
+                              fontFamily: 'JMH Cthulhumbus Arcade',
+                              fontSize: 22,
+                              color: Color(0xFF351B10),
+                            ),
+                          ),
+                          const Spacer(),
                           Text(
                             '${players[i].prestige} PP',
                             style: const TextStyle(
@@ -207,17 +207,23 @@ void showScoreboardDialog(BuildContext context) {
                               color: Color(0xFF351B10),
                             ),
                           ),
-                          if (players[i].stardust > 0)
-                            Text(
+                        ],
+                      ),
+                      if (players[i].stardust > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 26, top: 4),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
                               '${players[i].stardust} ✦',
                               style: const TextStyle(
                                 fontFamily: 'JMH Cthulhumbus Arcade',
                                 fontSize: 16,
-                                color: Color(0xFFFFC037),
+                                color: Color(0xFF202253),
                               ),
                             ),
-                        ],
-                      ),
+                          ),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 8),

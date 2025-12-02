@@ -4,9 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../providers/game_state.dart';
 import '../widgets/background_scaffold.dart';
-import '../widgets/primary_button.dart';
 import '../widgets/game_overlays.dart';
-import '../game_logic/game_models.dart'; // 👈 for Ingredient + helpers
+import '../game_logic/game_models.dart';
 import 'brew_result_screen.dart';
 import 'secret_reveal_screen.dart';
 
@@ -29,9 +28,24 @@ class _BrewScreenState extends State<BrewScreen> {
 
   // Must match Ingredient.name in game_models.dart
   final herbs = const ['Moonleaf', 'Emberroot', 'Frostmint', 'Nightshade'];
-  final minerals = const ['Crystal Dust', 'Iron Shard', 'Sulfur Stone', 'Blue Ore'];
-  final creatures = const ['Dragon Scale', 'Phoenix Feather', 'Kraken Ink', 'Basilisk Fang'];
-  final essences = const ['Light Essence', 'Shadow Oil', 'Spirit Dew', 'Forest Blood'];
+  final minerals = const [
+    'Crystal Dust',
+    'Iron Shard',
+    'Sulfur Stone',
+    'Blue Ore'
+  ];
+  final creatures = const [
+    'Dragon Scale',
+    'Phoenix Feather',
+    'Kraken Ink',
+    'Basilisk Fang'
+  ];
+  final essences = const [
+    'Light Essence',
+    'Shadow Oil',
+    'Spirit Dew',
+    'Forest Blood'
+  ];
 
   bool get _canBrew =>
       _herbIndex != null &&
@@ -47,7 +61,7 @@ class _BrewScreenState extends State<BrewScreen> {
     final player = game.currentPlayer;
     // Treat this as an ingredient *ID*, not name
     final String? boostedIngredientId = marketEvent.ingredientId;
-   const iconColors = [
+    const iconColors = [
       Color.fromARGB(255, 180, 67, 67), // Player 1 - red 0xFF983333
       Color.fromARGB(255, 42, 210, 240), // Player 2 - blue
       Color(0xFFFFDB8D), // Player 3 - yellow
@@ -55,12 +69,11 @@ class _BrewScreenState extends State<BrewScreen> {
     ];
 
     // Find this player's index so we can color their name
-    final playerIndex =
-        game.players.indexWhere((p) => p.id == player.id);
-    final Color nameColor = (playerIndex >= 0 &&
-            playerIndex < iconColors.length)
-        ? iconColors[playerIndex]
-        : const Color(0xFFFFF6E3); // fallback
+    final playerIndex = game.players.indexWhere((p) => p.id == player.id);
+    final Color nameColor =
+        (playerIndex >= 0 && playerIndex < iconColors.length)
+            ? iconColors[playerIndex]
+            : const Color(0xFFFFF6E3); // fallback
 
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_cauldron.png',
@@ -71,7 +84,8 @@ class _BrewScreenState extends State<BrewScreen> {
             Align(
               alignment: Alignment.topCenter,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -99,7 +113,8 @@ class _BrewScreenState extends State<BrewScreen> {
                           width: 33,
                           height: 33,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                            color:
+                                const Color(0xFFFFF6E3).withValues(alpha: 0.96),
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: const Color(0xFF351B10),
@@ -124,36 +139,37 @@ class _BrewScreenState extends State<BrewScreen> {
 
                     // GRID OF INGREDIENT TILES
                     SizedBox(
-                      height: 275,
+                      height: 400,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          // ROW 1: AZURE FOREST (CREATURES) – blue
+                          // ROW 1: CREATURES – purple
                           _IngredientRow(
                             colors: const [
-                              Color(0xFFA5DCE5),
-                              Color(0xFFA5DCE5),
-                              Color(0xFFA5DCE5),
-                              Color(0xFFA5DCE5),
+                              Color(0xFF8E5CF4),
+                              Color(0xFF8E5CF4),
+                              Color(0xFF8E5CF4),
+                              Color(0xFF8E5CF4),
                             ],
                             names: creatures,
                             selectedIndex: _creatureIndex,
                             boostedIngredientId: boostedIngredientId,
                             onTapIndex: (i) {
                               setState(() {
-                                _creatureIndex = (_creatureIndex == i) ? null : i;
+                                _creatureIndex =
+                                    (_creatureIndex == i) ? null : i;
                               });
                             },
                           ),
                           const SizedBox(height: 8),
 
-                          // ROW 2: SUNSTONE MINE (MINERALS) – yellow
+                          // ROW 2: MINERALS – yellow
                           _IngredientRow(
                             colors: const [
-                              Color(0xFFFFDB8D),
-                              Color(0xFFFFDB8D),
-                              Color(0xFFFFDB8D),
-                              Color(0xFFFFDB8D),
+                              Color(0xFFFFC037),
+                              Color(0xFFFFC037),
+                              Color(0xFFFFC037),
+                              Color(0xFFFFC037),
                             ],
                             names: minerals,
                             selectedIndex: _mineralIndex,
@@ -166,13 +182,13 @@ class _BrewScreenState extends State<BrewScreen> {
                           ),
                           const SizedBox(height: 8),
 
-                          // ROW 3: OBSIDIAN CAVES (HERBS) – lavender
+                          // ROW 3: HERBS – cyan
                           _IngredientRow(
                             colors: const [
-                              Color(0xFFDFD0F3),
-                              Color(0xFFDFD0F3),
-                              Color(0xFFDFD0F3),
-                              Color(0xFFDFD0F3),
+                              Color(0xFF009EBA),
+                              Color(0xFF009EBA),
+                              Color(0xFF009EBA),
+                              Color(0xFF009EBA),
                             ],
                             names: herbs,
                             selectedIndex: _herbIndex,
@@ -185,13 +201,13 @@ class _BrewScreenState extends State<BrewScreen> {
                           ),
                           const SizedBox(height: 8),
 
-                          // ROW 4: CRIMSON VOLCANO (ESSENCES) – peach
+                          // ROW 4: ESSENCES – red
                           _IngredientRow(
                             colors: const [
-                              Color(0xFFFFDCC9),
-                              Color(0xFFFFDCC9),
-                              Color(0xFFFFDCC9),
-                              Color(0xFFFFDCC9),
+                              Color(0xFFE53E3E),
+                              Color(0xFFE53E3E),
+                              Color(0xFFE53E3E),
+                              Color(0xFFE53E3E),
                             ],
                             names: essences,
                             selectedIndex: _essenceIndex,
@@ -206,6 +222,8 @@ class _BrewScreenState extends State<BrewScreen> {
                       ),
                     ),
 
+                    const SizedBox(height: 16),
+
                     // STARDUST SCROLL BUTTON
                     _StardustScrollButton(
                       isOn: _useStardust,
@@ -216,7 +234,7 @@ class _BrewScreenState extends State<BrewScreen> {
                       },
                     ),
 
-                    const SizedBox(height: 300),
+                    const SizedBox(height: 195),
 
                     // BOTTOM BUTTONS: Back + Brew!
                     Padding(
@@ -379,12 +397,37 @@ class _IngredientRow extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
-          child: _IngredientTile(
-            color: colors[i],
-            ingredientId: ingredientId,
-            isSelected: isSelected,
-            showBoostBadge: showBoostBadge,
-            onTap: () => onTapIndex(i),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _IngredientTile(
+                color: colors[i],
+                ingredientId: ingredientId,
+                isSelected: isSelected,
+                showBoostBadge: showBoostBadge,
+                onTap: () => onTapIndex(i),
+              ),
+              const SizedBox(height: 4),
+              SizedBox(
+                width: 70,
+                height: 32,
+                child: Text(
+                  names[i].toUpperCase(),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: 'Pixel Game',
+                    fontSize: 16,
+                    height: 1.0,
+                    color: Color(0xFFFFF6E3),
+                    shadows: [
+                      Shadow(blurRadius: 4, color: Colors.black),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       }),
@@ -523,12 +566,9 @@ class _StardustScrollButton extends StatelessWidget {
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFDB8D),
+                  color:
+                      isOn ? const Color(0xFF8E5CF4) : const Color(0xFFD4AF37),
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(
-                    color: const Color(0xFFFFDB8D),
-                    width: 4,
-                  ),
                 ),
               ),
             ),
@@ -540,26 +580,38 @@ class _StardustScrollButton extends StatelessWidget {
               bottom: 0,
               child: Container(
                 margin: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF6E3),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(
-                    color: const Color(0xFF351B10),
-                    width: 4,
-                  ),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(11)),
+                  color: Color(0xFF202253),
                 ),
                 child: Center(
-                  child: Text(
-                    'STARDUST',
-                    style: TextStyle(
-                      fontFamily: 'Pixel Game',
-                      fontSize: 29,
-                      height: 0.85,
-                      letterSpacing: 0.01,
-                      color: const Color(0xFF351B10),
-                      decoration:
-                          isOn ? TextDecoration.underline : TextDecoration.none,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Stardust icon
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Image.asset(
+                          'images/ingredients/stardust.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+
+                      // Stardust text
+                      Text(
+                        'STARDUST',
+                        style: TextStyle(
+                          fontFamily: 'Pixel Game',
+                          fontSize: 26,
+                          height: 0.85,
+                          letterSpacing: 0.01,
+                          color: isOn
+                              ? const Color(0xFF8E5CF4)
+                              : const Color(0xFFD4AF37),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

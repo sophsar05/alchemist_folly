@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/background_scaffold.dart';
-import '../widgets/primary_button.dart';
 import '../providers/game_state.dart';
 import '../game_logic/game_models.dart';
 
@@ -213,11 +212,35 @@ class _PotionListScreenState extends State<PotionListScreen> {
                   const SizedBox(height: 12),
 
                   // BACK BUTTON
-                  PrimaryButton(
-                    label: 'Back',
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                  Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: 122,
+                      height: 45,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF0D0),
+                            borderRadius: BorderRadius.circular(11.6),
+                            border: Border.all(
+                              color: const Color(0xFF351B10),
+                              width: 3.1,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            'Back',
+                            style: TextStyle(
+                              fontFamily: 'JMH Cthulhumbus Arcade',
+                              fontSize: 21.7,
+                              height: 0.79,
+                              color: Color(0xFF351B10),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
