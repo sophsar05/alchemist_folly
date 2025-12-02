@@ -11,6 +11,7 @@ import 'brew_screen.dart';
 import 'potion_list_screen.dart';
 import 'library_hint_screen.dart';
 import 'market_screen.dart';
+import 'black_market_screen.dart';
 
 import 'round_start_screen.dart';
 
@@ -41,12 +42,11 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
     ];
 
     // Find this player's index so we can color their name
-    final playerIndex =
-        game.players.indexWhere((p) => p.id == player.id);
-    final Color nameColor = (playerIndex >= 0 &&
-            playerIndex < iconColors.length)
-        ? iconColors[playerIndex]
-        : const Color(0xFFFFF6E3); // fallback
+    final playerIndex = game.players.indexWhere((p) => p.id == player.id);
+    final Color nameColor =
+        (playerIndex >= 0 && playerIndex < iconColors.length)
+            ? iconColors[playerIndex]
+            : const Color(0xFFFFF6E3); // fallback
 
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_default.png',
@@ -90,68 +90,67 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                       height: 54,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color:
-                            const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                        color: const Color(0xFFFFF6E3).withValues(alpha: 0.96),
                         border: Border.all(
                           color: const Color(0xFF351B10),
                           width: 4,
                         ),
                       ),
                       alignment: Alignment.center,
-    
                       child: Text(
-                      '${game.currentRound}',
-                      style: TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 55,
-                        height: 0.71,
-                        color: nameColor, // 🔥 color changes based on player index
+                        '${game.currentRound}',
+                        style: TextStyle(
+                          fontFamily: 'Pixel Game',
+                          fontSize: 55,
+                          height: 0.71,
+                          color:
+                              nameColor, // 🔥 color changes based on player index
+                        ),
                       ),
                     ),
-                    ),
-                    
+
                     const SizedBox(height: 16),
 
                     // PLAYER NAME TURN – colored by player
                     Stack(
-                    children: [
-                      // OUTLINE — black, drawn 4 times around the text
-                      for (final offset in [
-                        const Offset(-2, -2),
-                        const Offset(2, -2),
-                        const Offset(-2, 2),
-                        const Offset(2, 2),
-                      ])
-                        Positioned(
-                          left: offset.dx,
-                          top: offset.dy,
-                          child: Text(
-                            "${player.name.toUpperCase()}'S TURN",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontFamily: 'Pixel Game',
-                              fontSize: 32,
-                              height: 0.71,
-                              color: Colors.black, // outline color
-                              letterSpacing: -0.01,
+                      children: [
+                        // OUTLINE — black, drawn 4 times around the text
+                        for (final offset in [
+                          const Offset(-2, -2),
+                          const Offset(2, -2),
+                          const Offset(-2, 2),
+                          const Offset(2, 2),
+                        ])
+                          Positioned(
+                            left: offset.dx,
+                            top: offset.dy,
+                            child: Text(
+                              "${player.name.toUpperCase()}'S TURN",
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontFamily: 'Pixel Game',
+                                fontSize: 32,
+                                height: 0.71,
+                                color: Colors.black, // outline color
+                                letterSpacing: -0.01,
+                              ),
                             ),
                           ),
-                        ),
 
-                      // MAIN TEXT — uses player color
-                      Text(
-                        "${player.name.toUpperCase()}'S TURN",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Pixel Game',
-                          fontSize: 32,
-                          height: 0.71,
-                          color: nameColor, // center colored text
-                          letterSpacing: -0.01,
+                        // MAIN TEXT — uses player color
+                        Text(
+                          "${player.name.toUpperCase()}'S TURN",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Pixel Game',
+                            fontSize: 32,
+                            height: 0.71,
+                            color: nameColor, // center colored text
+                            letterSpacing: -0.01,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
 
                     const SizedBox(height: 4),
 
@@ -179,31 +178,6 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                         shadows: [
                           Shadow(
                             blurRadius: 8.9,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // ACTION POINTS DISPLAY
-                    Text(
-                      'ACTION POINTS: ${game.currentAP}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 20,
-                        height: 0.71,
-                        color: game.currentAP >= 2 
-                            ? const Color(0xFF4ADE80)  // Green when can brew
-                            : game.currentAP >= 1
-                                ? const Color(0xFFFFC037)  // Yellow when can shop
-                                : const Color(0xFFEF4444),  // Red when no AP
-                        letterSpacing: -0.01,
-                        shadows: const [
-                          Shadow(
-                            blurRadius: 6.0,
                             color: Colors.black,
                           ),
                         ],
@@ -252,14 +226,24 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                         );
                       },
                     ),
+                    const SizedBox(height: 16),
+                    _BlackMarketButton(
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          BlackMarketScreen.routeName,
+                        );
+                      },
+                    ),
 
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 14),
 
                     // END TURN / END GAME (smaller scroll-style)
                     SizedBox(
                       width: 180,
                       child: PrimaryButton(
-                        label: game.isGameOverByPoints ? 'End Game' : 'End Turn',
+                        label:
+                            game.isGameOverByPoints ? 'End Game' : 'End Turn',
                         onPressed: () {
                           if (game.isGameOverByPoints) {
                             Navigator.pushNamedAndRemoveUntil(
@@ -282,7 +266,7 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 55),
+                    const SizedBox(height: 20),
 
                     // LOGO
                     const AlchemistsFollyLogo(),
@@ -320,6 +304,7 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
     );
   }
 }
+
 class _MenuScrollButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -377,6 +362,64 @@ class _MenuScrollButton extends StatelessWidget {
                 fontSize: 28,
                 height: 0.9,
                 color: Color(0xFF351B10),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BlackMarketButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _BlackMarketButton({
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 315,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2A1B2A),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: const Color(0xFF8E5CF4),
+              width: 5,
+            ),
+          ),
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF3D2B3D),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: const Color(0xFF8E5CF4),
+                width: 4,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF8E5CF4).withValues(alpha: 0.4),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: const Text(
+              'Black Market',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'JMH Cthulhumbus Arcade',
+                fontSize: 28,
+                height: 0.9,
+                color: Color(0xFFE2E8F0),
               ),
             ),
           ),

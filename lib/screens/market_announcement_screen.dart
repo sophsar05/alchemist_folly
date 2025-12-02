@@ -25,9 +25,11 @@ class MarketAnnouncementScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 80, 24, 24),
               child: Center(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
                     color: const Color(0xFFFFDB8D),
                     borderRadius: BorderRadius.circular(22),
                     border: Border.all(
@@ -104,11 +106,12 @@ class MarketAnnouncementScreen extends StatelessWidget {
                             );
                           },
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
+            ),
+          ),
             ),
 
             Positioned(
