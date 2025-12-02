@@ -593,7 +593,7 @@ class _StardustScrollButton extends StatelessWidget {
                         width: 50,
                         height: 50,
                         child: Image.asset(
-                          'images/ingredients/stardust.png',
+                          'assets/images/ingredients/stardust.png',
                           fit: BoxFit.cover,
                         ),
                       ),
