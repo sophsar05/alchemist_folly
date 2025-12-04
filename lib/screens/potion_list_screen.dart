@@ -29,38 +29,68 @@ class _PotionListScreenState extends State<PotionListScreen> {
   Color _colorForCategory(IngredientCategory category) {
     switch (category) {
       case IngredientCategory.herb: // Obsidian Caves – lavender/purple
-        return const Color(0xFF7F5FFF);
-      case IngredientCategory.mineral: // Sunstone Mine – orange/yellow
-        return const Color(0xFFFE7305);
-      case IngredientCategory.creature: // Azure Forest – blue
         return const Color(0xFF009EBA);
+      case IngredientCategory.mineral: // Azure Forest – blue 
+        return const Color(0xFFFFC037);
+      case IngredientCategory.creature: //  Sunstone Mine – orange/yellow
+        return const Color(0xFF8E5CF4);
       case IngredientCategory.essence: // Crimson Volcano – reddish
-        return const Color(0xFFD9408F);
+        return const Color(0xFFE53E3E);
     }
   }
 
-  List<Potion> _filteredPotions(GameState game) {
-    final q = _searchText.trim().toLowerCase();
-    if (q.isEmpty) return kPotions;
+    List<Potion> _filteredPotions(GameState game) {
+    // Take the whole search string, lowercase it
+    final raw = _searchText.toLowerCase();
 
-    return kPotions.where((p) {
-      final nameMatch = p.name.toLowerCase().contains(q);
+    // Split by comma so user can search multiple things:
+    // e.g. "dragon, frost, invis"
+    final terms = raw
+        .split(',')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
 
+    // If nothing meaningful was typed, show all potions
+    if (terms.isEmpty) return kPotions;
+
+    bool _matchesTerm(Potion p, String term) {
+      final t = term.toLowerCase();
+
+      // 1) Potion name, e.g. "invisibility potion"
+      if (p.name.toLowerCase().contains(t)) return true;
+
+      // 2) Ingredient names (herb, mineral, creature, essence)
       final herb = ingredientById(p.herbId);
       final mineral = ingredientById(p.mineralId);
       final creature = ingredientById(p.creatureId);
       final essence = ingredientById(p.essenceId);
 
-      final ingredientMatch = [
+      final ingredientNames = [
         herb?.name,
         mineral?.name,
         creature?.name,
         essence?.name,
-      ].whereType<String>().any(
-            (n) => n.toLowerCase().contains(q),
-          );
+      ].whereType<String>();
 
-      return nameMatch || ingredientMatch;
+      for (final name in ingredientNames) {
+        final n = name.toLowerCase();
+
+        // "dragon" will match "dragon scale"
+        if (n.contains(t)) return true;
+
+        // (Optional: first-word-starts-with behavior)
+        // final firstWord = n.split(' ').first;
+        // if (firstWord.startsWith(t)) return true;
+      }
+
+      return false;
+    }
+
+    // Keep potions where ANY of the comma-separated terms matches
+    // e.g. "dragon, frost" -> potions with dragon OR frost
+    return kPotions.where((p) {
+      return terms.any((term) => _matchesTerm(p, term));
     }).toList();
   }
 
