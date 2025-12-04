@@ -48,10 +48,10 @@ class _PlayerCountScreenState extends State<PlayerCountScreen> {
               const SizedBox(height: 150),
 
               // TITLE
-              Text(
+              const Text(
                 'HOW MANY PLAYERS\nARE PLAYING?',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Pixel Game',
                   fontSize: 42,
                   height: 0.71,
@@ -77,7 +77,7 @@ class _PlayerCountScreenState extends State<PlayerCountScreen> {
                     color: const Color(0xFFFFDB8D),
                     borderRadius: BorderRadius.circular(13),
                     border: Border.all(
-                      color: Color(0xFF351B10),
+                      color: const Color(0xFF351B10),
                       width: 4,
                     ),
                   ),

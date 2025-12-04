@@ -374,9 +374,9 @@ class _MarketScreenState extends State<MarketScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   '2 PP',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Pixel Game',
                     fontSize: 22,
                     color: Color(0xFFFE7305),

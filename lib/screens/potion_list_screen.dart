@@ -15,8 +15,10 @@ class PotionListScreen extends StatefulWidget {
   State<PotionListScreen> createState() => _PotionListScreenState();
 }
 
+
 class _PotionListScreenState extends State<PotionListScreen> {
   final TextEditingController _searchController = TextEditingController();
+  
   String _searchText = '';
   Potion? _selectedPotion; // for overlay
 
@@ -54,7 +56,7 @@ class _PotionListScreenState extends State<PotionListScreen> {
     // If nothing meaningful was typed, show all potions
     if (terms.isEmpty) return kPotions;
 
-    bool _matchesTerm(Potion p, String term) {
+    bool matchesTerm(Potion p, String term) {
       final t = term.toLowerCase();
 
       // 1) Potion name, e.g. "invisibility potion"
@@ -90,7 +92,7 @@ class _PotionListScreenState extends State<PotionListScreen> {
     // Keep potions where ANY of the comma-separated terms matches
     // e.g. "dragon, frost" -> potions with dragon OR frost
     return kPotions.where((p) {
-      return terms.any((term) => _matchesTerm(p, term));
+      return terms.any((term) => matchesTerm(p, term));
     }).toList();
   }
 
@@ -453,7 +455,7 @@ class _PotionCard extends StatelessWidget {
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontFamily: 'Pixel Game',
-                fontSize: 20,
+                fontSize: 25,
                 height: 1.0,
                 letterSpacing: -0.01,
                 color: ppColor,
@@ -621,9 +623,9 @@ class _PotionDetailOverlay extends StatelessWidget {
                       child: Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 6),
+                              horizontal: 13, vertical: 3),
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 248, 198, 91),
+                            color: const Color(0xFFFFFFFF),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: const Color(0xFF351B10),
@@ -640,7 +642,7 @@ class _PotionDetailOverlay extends StatelessWidget {
                             '+${potion.points} PP',
                             style: const TextStyle(
                               fontFamily: 'Pixel Game',
-                              fontSize: 24,
+                              fontSize: 35,
                               height: 1.0,
                               color: Color(0xFFFE7305),
                             ),

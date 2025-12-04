@@ -136,12 +136,12 @@ class _RoundStartScreenState extends State<RoundStartScreen> {
 
                       // ROUND 1 INSTRUCTION
                       if (game.currentRound == 1)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 40),
                           child: Text(
                             'TAKE 3 CARDS FROM THE\nBOTTOM OF THE DECK OF\nALL COLORS EXCEPT\nYOUR OWN.',
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Pixel Game',
                               fontSize: 32,
                               height: 0.9,

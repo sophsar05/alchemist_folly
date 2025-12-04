@@ -84,7 +84,7 @@ class Player {
     required this.name,
     this.prestige = 0,
     this.potionsBrewed = 0,
-    this.stardust = 0,
+    this.stardust = 1,
     this.discoveredSecretPotion = false,
   });
 }
