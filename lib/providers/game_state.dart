@@ -339,43 +339,58 @@ class GameState extends ChangeNotifier {
     // 2) NORMAL POTION + MARKET EFFECTS
     // ------------------------------------------------------------------
     if (potion != null) {
-      base = potion.points;
-
-      // market effects
-      if (_currentMarketEvent.type == MarketEventType.inDemand &&
-          _currentMarketEvent.ingredientId != null &&
-          [
-            herb.id,
-            mineral.id,
-            creature.id,
-            essence.id,
-          ].contains(_currentMarketEvent.ingredientId)) {
-        bonus += 2;
-      }
-
-      if (isSecret) {
-        currentPlayer.discoveredSecretPotion = true;
-        _secretFound = true;
-        _winner = currentPlayer;
-
+      if (!isSecret && brewedPotionIds.contains(potion.id)) {
         message =
-            'The Stardust guides your hand! You brewed the secret ${potion.name}!';
+            'This potion has already been brewed by another alchemist! You gain nothing from duplicating their work.';
+        base = -2;
+        potion = null;
+
+        if (_currentMarketEvent.type == MarketEventType.folly &&
+            _currentMarketEvent.ingredientId != null &&
+            [
+              herb.id,
+              mineral.id,
+              creature.id,
+              essence.id,
+            ].contains(_currentMarketEvent.ingredientId)) {
+          bonus -= 2;
+          follyPenalty = true;
+        }
       } else {
-        message = 'You brewed ${potion.name}!';
-      }
+        base = potion.points;
 
-      if (base + bonus < 0) {
-        bonus = -base;
-      }
+        if (_currentMarketEvent.type == MarketEventType.inDemand &&
+            _currentMarketEvent.ingredientId != null &&
+            [
+              herb.id,
+              mineral.id,
+              creature.id,
+              essence.id,
+            ].contains(_currentMarketEvent.ingredientId)) {
+          bonus += 2;
+        }
 
-      brewedPotionIds.add(potion.id);
+        if (isSecret) {
+          currentPlayer.discoveredSecretPotion = true;
+          _secretFound = true;
+          _winner = currentPlayer;
+
+          message =
+              'The Stardust guides your hand! You brewed the secret ${potion.name}!';
+        } else {
+          message = 'You brewed ${potion.name}!';
+        }
+
+        if (base + bonus < 0) {
+          bonus = -base;
+        }
+
+        brewedPotionIds.add(potion.id);
+      }
     } else {
-      // ----------------------------------------------------------------
-      // 3) TOTAL FAIL – no potion & no Stardust secret
-      // ----------------------------------------------------------------
       message =
           'The mixture fizzles into useless sludge. The Trial Masters are not impressed.';
-      base = 0;
+      base = -2;
 
       if (_currentMarketEvent.type == MarketEventType.folly &&
           _currentMarketEvent.ingredientId != null &&
@@ -453,78 +468,42 @@ class GameState extends ChangeNotifier {
     return null; // No error, purchase successful
   }
 
-  // ---------------------------------------------------------------------------
-  // BLACK MARKET
-  // ---------------------------------------------------------------------------
-
-  /// The Fence: Trade any two of your basic ingredient tokens back to the
-  /// supply to take one basic ingredient of your choice.
-  String? useFenceTrade(
-      Map<String, int> ingredientsToTrade, String receivedIngredientId) {
-    int totalIngredients = 0;
-    for (final count in ingredientsToTrade.values) {
-      totalIngredients += count;
+  /// trade ingredient from two diff categories: herb, mineral, creature, essence to gain 1 Stardust.
+  String? tradeForStardust(Map<String, int> ingredientsToTrade) {
+    if (ingredientsToTrade.isEmpty) {
+      return 'Select at least one ingredient to trade.';
     }
 
-    if (totalIngredients < 2) {
-      return 'The Fence requires at least 2 ingredients to trade.';
-    }
-
-    // Deduct exactly 2 ingredients from the traded ingredients
-    // (The UI should handle only allowing 2+ to be selected)
-    // For simplicity, we trust the UI sent valid data
-
-    // Success - no actual inventory tracking, just conceptual
-    notifyListeners();
-    return null; // No error, trade successful
-  }
-
-  /// The Smuggler: Trade one of each of three different basic ingredients
-  /// (e.g., 1 Red, 1 Blue, 1 Black) to acquire one rare Stardust token.
-  String? useSmugglerTrade(Map<String, int> ingredientsToTrade) {
     int totalIngredients = 0;
-    int uniqueIngredients = 0;
+    final Set<IngredientCategory> usedCategories = {};
 
     for (final entry in ingredientsToTrade.entries) {
-      if (entry.value > 0) {
-        uniqueIngredients++;
-        totalIngredients += entry.value;
+      final ingredientId = entry.key;
+      final count = entry.value;
+
+      if (count > 0) {
+        totalIngredients += count;
+
+        // Find the ingredient and track its category
+        final ingredient = ingredientById(ingredientId);
+        if (ingredient != null) {
+          usedCategories.add(ingredient.category);
+        }
       }
     }
 
-    if (totalIngredients < 3) {
-      return 'The Smuggler requires at least 3 ingredients to trade.';
+    if (totalIngredients != 2) {
+      return 'You must trade exactly 2 ingredients.';
     }
 
-    if (uniqueIngredients < 3) {
-      return 'The Smuggler requires 3 DIFFERENT ingredients (not multiples of the same one).';
+    if (usedCategories.length < 2) {
+      return 'You must trade 2 ingredients from different types (herb, mineral, creature, or essence).';
     }
 
     // Award 1 Stardust
     currentPlayer.stardust += 1;
     notifyListeners();
 
-    return null; // No error, trade successful
-  }
-
-  // OLD BLACK MARKET METHOD (kept for backward compatibility if needed)
-  String? tradeForStardust(Map<String, int> ingredientsToTrade) {
-    int totalIngredients = 0;
-    for (final count in ingredientsToTrade.values) {
-      totalIngredients += count;
-    }
-
-    if (totalIngredients == 0) {
-      return 'Select at least one ingredient to trade.';
-    }
-
-    // Convert ingredients to Stardust (1 ingredient = 1 Stardust)
-    int stardustGained = totalIngredients;
-
-    // Award Stardust
-    currentPlayer.stardust += stardustGained;
-    notifyListeners();
-
-    return null; // No error, trade successful
+    return null;
   }
 }

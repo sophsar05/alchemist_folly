@@ -129,10 +129,7 @@ void showPauseDialog(BuildContext context) {
 /// SCOREBOARD OVERLAY (shows each player's PP)
 void showScoreboardDialog(BuildContext context) {
   final game = context.read<GameState>();
-  final players = [...game.players];
-
-  // sort high to low PP
-  players.sort((a, b) => b.prestige.compareTo(a.prestige));
+  final players = game.players;
 
   final dotColors = <Color>[
     const Color(0xFF983333), // red

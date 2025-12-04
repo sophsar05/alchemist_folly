@@ -63,7 +63,7 @@ class _BrewScreenState extends State<BrewScreen> {
     final bool isInDemandEvent = marketEvent.type == MarketEventType.inDemand;
     final bool isFollyEvent = marketEvent.type == MarketEventType.folly;
     // Treat this as an ingredient *ID*, not name
-    final String? boostedIngredientId = 
+    final String? boostedIngredientId =
         isInDemandEvent ? marketEvent.ingredientId : null;
     final String? follyIngredientId =
         isFollyEvent ? marketEvent.ingredientId : null;
@@ -92,61 +92,60 @@ class _BrewScreenState extends State<BrewScreen> {
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 20),
 
-                    // ROUND LABEL + NUMBER
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'ROUND',
-                          style: TextStyle(
-                            fontFamily: 'Pixel Game',
-                            fontSize: 42,
-                            height: 0.71,
-                            color: Color(0xFFFFF6E3),
-                            letterSpacing: -0.01,
-                            shadows: [
-                              Shadow(blurRadius: 8.9, color: Colors.black),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Container(
-                          width: 33,
-                          height: 33,
-                          decoration: BoxDecoration(
-                            color:
-                                const Color(0xFFFFF6E3).withValues(alpha: 0.96),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xFF351B10),
-                              width: 4,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '${game.currentRound}',
+                      // ROUND LABEL + NUMBER
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'ROUND',
                             style: TextStyle(
                               fontFamily: 'Pixel Game',
-                              fontSize: 20,
+                              fontSize: 42,
                               height: 0.71,
-                              color: nameColor,
+                              color: Color(0xFFFFF6E3),
+                              letterSpacing: -0.01,
+                              shadows: [
+                                Shadow(blurRadius: 8.9, color: Colors.black),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 6),
+                          Container(
+                            width: 33,
+                            height: 33,
+                            decoration: BoxDecoration(
+                              color:
+                                  const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xFF351B10),
+                                width: 4,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${game.currentRound}',
+                              style: TextStyle(
+                                fontFamily: 'Pixel Game',
+                                fontSize: 20,
+                                height: 0.71,
+                                color: nameColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    // GRID OF INGREDIENT TILES
-                    SizedBox(
-                      height: 400,
-                      child: Column(
+                      // GRID OF INGREDIENT TILES
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           // ROW 1: CREATURES – purple
@@ -230,96 +229,96 @@ class _BrewScreenState extends State<BrewScreen> {
                           ),
                         ],
                       ),
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    // STARDUST SCROLL BUTTON
-                    _StardustScrollButton(
-                      isOn: _useStardust,
-                      onTap: () {
-                        setState(() {
-                          _useStardust = !_useStardust;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 195),
-
-                    // BOTTOM BUTTONS: Back + Brew!
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Back
-                          SizedBox(
-                            width: 122,
-                            height: 45,
-                            child: GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFFF0D0),
-                                  borderRadius: BorderRadius.circular(11.6),
-                                  border: Border.all(
-                                    color: const Color(0xFF351B10),
-                                    width: 3.1,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: const Text(
-                                  'Back',
-                                  style: TextStyle(
-                                    fontFamily: 'JMH Cthulhumbus Arcade',
-                                    fontSize: 21.7,
-                                    height: 0.79,
-                                    color: Color(0xFF351B10),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-
-                          // Brew!
-                          SizedBox(
-                            width: 122,
-                            height: 45,
-                            child: GestureDetector(
-                              onTap: _canBrew
-                                  ? () => _onBrewPressed(context, game)
-                                  : null,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: _canBrew
-                                      ? const Color(0xFFFFA35B)
-                                      : const Color(0xFFCCCCCC),
-                                  borderRadius: BorderRadius.circular(11.6),
-                                  border: Border.all(
-                                    color: const Color(0xFF351B10),
-                                    width: 3.1,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Brew!',
-                                  style: TextStyle(
-                                    fontFamily: 'JMH Cthulhumbus Arcade',
-                                    fontSize: 21.7,
-                                    height: 0.79,
-                                    color: _canBrew
-                                        ? const Color(0xFF351B10)
-                                        : const Color(0xFF8C8C8C),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                      // STARDUST SCROLL BUTTON
+                      _StardustScrollButton(
+                        isOn: _useStardust,
+                        onTap: () {
+                          setState(() {
+                            _useStardust = !_useStardust;
+                          });
+                        },
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 32),
+
+                      // BOTTOM BUTTONS: Back + Brew!
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Back
+                            SizedBox(
+                              width: 122,
+                              height: 45,
+                              child: GestureDetector(
+                                onTap: () => Navigator.pop(context),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFFF0D0),
+                                    borderRadius: BorderRadius.circular(11.6),
+                                    border: Border.all(
+                                      color: const Color(0xFF351B10),
+                                      width: 3.1,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    'Back',
+                                    style: TextStyle(
+                                      fontFamily: 'JMH Cthulhumbus Arcade',
+                                      fontSize: 21.7,
+                                      height: 0.79,
+                                      color: Color(0xFF351B10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+
+                            // Brew!
+                            SizedBox(
+                              width: 122,
+                              height: 45,
+                              child: GestureDetector(
+                                onTap: _canBrew
+                                    ? () => _onBrewPressed(context, game)
+                                    : null,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: _canBrew
+                                        ? const Color(0xFFFFA35B)
+                                        : const Color(0xFFCCCCCC),
+                                    borderRadius: BorderRadius.circular(11.6),
+                                    border: Border.all(
+                                      color: const Color(0xFF351B10),
+                                      width: 3.1,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Brew!',
+                                    style: TextStyle(
+                                      fontFamily: 'JMH Cthulhumbus Arcade',
+                                      fontSize: 21.7,
+                                      height: 0.79,
+                                      color: _canBrew
+                                          ? const Color(0xFF351B10)
+                                          : const Color(0xFF8C8C8C),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -604,6 +603,7 @@ class _StardustScrollButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
             // outer parchment
             Positioned.fill(
@@ -635,12 +635,22 @@ class _StardustScrollButton extends StatelessWidget {
                       SizedBox(
                         width: 50,
                         height: 50,
-                        child: Image.asset(
-                          'assets/images/ingredients/special/stardust.png',
-                          fit: BoxFit.cover,
+                        child: ClipRect(
+                          child: OverflowBox(
+                            maxWidth: 60,
+                            maxHeight: 60,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Image.asset(
+                                'assets/images/ingredients/special/stardust.png',
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-
                       // Stardust text
                       Text(
                         'STARDUST',
@@ -659,6 +669,30 @@ class _StardustScrollButton extends StatelessWidget {
                 ),
               ),
             ),
+
+            // check badge when selected
+            if (isOn)
+              Positioned(
+                right: -6,
+                bottom: -6,
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF913B),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFF351B10),
+                      width: 1.9,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    size: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

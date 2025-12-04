@@ -47,13 +47,16 @@ class BrewResultScreen extends StatelessWidget {
     final currentRound = game.currentRound;
     final hasBonus = (result.bonusPoints ?? 0) > 0;
     final hasPenalty = (result.bonusPoints ?? 0) < 0;
+    final isFailed = result.basePoints <= 0;
 
     // Colors from your Figma
     const cream = Color(0xFFFFF6E3);
     const darkBrown = Color(0xFF351B10);
 
     return BackgroundScaffold(
-      backgroundAsset: 'assets/images/bg_cauldron.png',
+      backgroundAsset: isFailed
+          ? 'assets/images/bg_empty_cauldron.png'
+          : 'assets/images/bg_cauldron.png',
       child: SafeArea(
         child: Stack(
           children: [
@@ -182,14 +185,16 @@ class BrewResultScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      '+${result.basePoints}',
-                                      style: const TextStyle(
+                                      '${result.basePoints >= 0 ? '+' : ''}${result.basePoints}',
+                                      style: TextStyle(
                                         fontFamily: 'Pixel Game',
                                         fontSize: 86,
                                         height: 0.71,
                                         letterSpacing: -0.01,
-                                        color: cream,
-                                        shadows: [
+                                        color: result.basePoints >= 0
+                                            ? cream
+                                            : const Color(0xFFEF4444),
+                                        shadows: const [
                                           Shadow(
                                             blurRadius: 18.0,
                                             color: Colors.black,
@@ -230,14 +235,16 @@ class BrewResultScreen extends StatelessWidget {
                               // CENTER: potion image
                               Expanded(
                                 child: Center(
-                                  child: SizedBox(
-                                    width: 220,
-                                    height: 220,
-                                    child: Image.asset(
-                                      'assets/images/potion.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
+                                  child: isFailed
+                                      ? const SizedBox.shrink()
+                                      : SizedBox(
+                                          width: 150,
+                                          height: 150,
+                                          child: Image.asset(
+                                            'assets/images/potions/${result.potion!.id}.png',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
                                 ),
                               ),
 
