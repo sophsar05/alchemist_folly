@@ -177,8 +177,8 @@ class _MarketScreenState extends State<MarketScreen> {
             children: [
               const Text(
                 'Grand Bazaar',
-                style:
-                    TextStyle(fontFamily: 'JMH Cthulhumbus Arcade', fontSize: 30),
+                style: TextStyle(
+                    fontFamily: 'JMH Cthulhumbus Arcade', fontSize: 30),
               ),
 
               const Text(
@@ -523,9 +523,10 @@ class _MarketScreenState extends State<MarketScreen> {
                 children: [
                   const Text(
                     'Insufficient Funds!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Pixel Game',
-                      fontSize: 24,
+                      fontSize: 30,
                       color: Color(0xFFEF4444),
                       fontWeight: FontWeight.bold,
                     ),
@@ -536,7 +537,7 @@ class _MarketScreenState extends State<MarketScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Merchant Copy',
-                      fontSize: 18,
+                      fontSize: 24,
                       color: Color(0xFF351B10),
                     ),
                   ),
@@ -579,20 +580,21 @@ class _MarketScreenState extends State<MarketScreen> {
                 children: [
                   const Text(
                     'Purchase Complete!',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Pixel Game',
-                      fontSize: 24,
+                      fontSize: 30,
                       color: Color(0xFF4ADE80),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Successfully purchased $itemCount ingredient${itemCount == 1 ? '' : 's'}!\n\nYour satchel grows heavier with alchemical promise...',
+                    'Successfully purchased $itemCount ingredient${itemCount == 1 ? '' : 's'}! \n\n Claim your ingredient and shuffle the deck.',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: 'Merchant Copy',
-                      fontSize: 18,
+                      fontSize: 24,
                       color: Color(0xFF351B10),
                     ),
                   ),
@@ -620,76 +622,76 @@ class _MarketScreenState extends State<MarketScreen> {
           height: 300,
           width: double.infinity,
           decoration: BoxDecoration(
-          color: const Color(0xFFFFDB8D),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
             color: const Color(0xFFFFDB8D),
-            width: 5,
-          ),
-        ),
-        child: Container(
-          margin: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFF6E3),
             borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: const Color(0xFF351B10),
-              width: 4,
+              color: const Color(0xFFFFDB8D),
+              width: 5,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFFE5A8).withValues(alpha: 0.9),
-                blurRadius: 0.6,
-                spreadRadius: 1.2,
-              ),
-              BoxShadow(
-                color: const Color(0xFFCC9A4B).withValues(alpha: 0.5),
-                blurRadius: 0.6,
-                spreadRadius: 0.4,
-                offset: const Offset(0, 1),
-              ),
-            ],
           ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Market Status :',
-                style: TextStyle(
-                  fontFamily: 'Pixel Game',
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF351B10),
-                ),
+          child: Container(
+            margin: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF6E3),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: const Color(0xFF351B10),
+                width: 4,
               ),
-              const SizedBox(height: 24),
-              Text(
-                marketEvent.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'JMH Cthulhumbus Arcade',
-                  fontSize: 22,
-                  height: 1.2,
-                  color: Color(0xFF8B4513),
-                  fontWeight: FontWeight.bold,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFFE5A8).withValues(alpha: 0.9),
+                  blurRadius: 0.6,
+                  spreadRadius: 1.2,
                 ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                marketEvent.description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontFamily: 'Pixel Game',
-                  fontSize: 18,
-                  height: 1.3,
-                  color: Color(0xFF351B10),
+                BoxShadow(
+                  color: const Color(0xFFCC9A4B).withValues(alpha: 0.5),
+                  blurRadius: 0.6,
+                  spreadRadius: 0.4,
+                  offset: const Offset(0, 1),
                 ),
-              ),
-            ],
+              ],
+            ),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Market Status :',
+                  style: TextStyle(
+                    fontFamily: 'Pixel Game',
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF351B10),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  marketEvent.title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'JMH Cthulhumbus Arcade',
+                    fontSize: 22,
+                    height: 1.2,
+                    color: Color(0xFF8B4513),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  marketEvent.description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Pixel Game',
+                    fontSize: 18,
+                    height: 1.3,
+                    color: Color(0xFF351B10),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

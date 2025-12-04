@@ -43,18 +43,27 @@ class _BlackMarketScreenState extends State<BlackMarketScreen> {
 
   int get _totalSelectedCount => _selectedIngredients.length;
 
-  bool get _canUseFence => _totalSelectedCount == 2;
+// check if exactly 2 diff ingredient types
+  bool get _canTrade {
+    if (_totalSelectedCount != 2) return false;
 
-  bool get _canUseSmuggler => _totalSelectedCount == 3;
+    final categories = <IngredientCategory>{};
+    for (final ingredientId in _selectedIngredients.keys) {
+      final ingredient = ingredientById(ingredientId);
+      if (ingredient != null) {
+        categories.add(ingredient.category);
+      }
+    }
+
+    return categories.length == 2;
+  }
 
   void _toggleIngredient(String ingredientId) {
     setState(() {
       if (_selectedIngredients.containsKey(ingredientId)) {
-        // Remove this ingredient and reorder the rest
         final removedOrder = _selectedIngredients[ingredientId]!;
         _selectedIngredients.remove(ingredientId);
 
-        // Decrement order for all ingredients that came after this one
         _selectedIngredients.forEach((key, order) {
           if (order > removedOrder) {
             _selectedIngredients[key] = order - 1;
@@ -63,7 +72,6 @@ class _BlackMarketScreenState extends State<BlackMarketScreen> {
 
         _nextSelectionOrder--;
       } else {
-        // Add new ingredient with next order number
         _selectedIngredients[ingredientId] = _nextSelectionOrder;
         _nextSelectionOrder++;
       }
@@ -281,203 +289,31 @@ class _BlackMarketScreenState extends State<BlackMarketScreen> {
   }
 
   Widget _buildActionButtons(BuildContext context, GameState game) {
-    return Column(
-      children: [
-        // THE FENCE
-        _BlackMarketActionButton(
-          label: 'The Fence',
-          description: 'Trade 2 different ingredients for 1 of your choice',
-          enabled: _canUseFence,
-          color: const Color(0xFF6B4423),
-          onPressed: () => _showFenceDialog(context, game),
-        ),
-
-        const SizedBox(height: 8),
-
-        // THE SMUGGLER
-        _BlackMarketActionButton(
-          label: 'The Smuggler',
-          description: 'Trade 3 different ingredients for 1 Stardust',
-          enabled: _canUseSmuggler,
-          color: const Color(0xFF8E5CF4),
-          onPressed: () => _useSmugglerTrade(context, game),
-        ),
-      ],
+    return _BlackMarketActionButton(
+      label: 'TRADE',
+      description: 'Trade 2 different ingredient types for 1 Stardust',
+      enabled: _canTrade,
+      color: const Color(0xFF8E5CF4),
+      onPressed: () => _executeTrade(context, game),
     );
   }
 
-  void _showFenceDialog(BuildContext context, GameState game) {
-    if (!_canUseFence) return;
+  void _executeTrade(BuildContext context, GameState game) {
+    if (!_canTrade) return;
 
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        String? selectedIngredientId;
-
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) {
-            return Center(
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  width: 320,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2A1B2A).withValues(alpha: 0.95),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: const Color(0xFF6B4423),
-                      width: 3,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'The Fence',
-                        style: TextStyle(
-                          fontFamily: 'JMH Cthulhumbus Arcade',
-                          fontSize: 28,
-                          color: Color(0xFFE2E8F0),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Choose which ingredient you want to receive:',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Pixel Game',
-                          fontSize: 20,
-                          color: Color(0xFFE2E8F0),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Ingredient selection dropdown
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF6E3),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: const Color(0xFF351B10),
-                            width: 2,
-                          ),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedIngredientId,
-                            hint: const Text(
-                              'Select ingredient...',
-                              style: TextStyle(
-                                fontFamily: 'Pixel Game',
-                                fontSize: 14,
-                                color: Color(0xFF666666),
-                              ),
-                            ),
-                            isExpanded: true,
-                            items: kIngredients.map((ingredient) {
-                              return DropdownMenuItem<String>(
-                                value: ingredient.id,
-                                child: Text(
-                                  ingredient.name,
-                                  style: const TextStyle(
-                                    fontFamily: 'Pixel Game',
-                                    fontSize: 18,
-                                    color: Color(0xFF351B10),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setDialogState(() {
-                                selectedIngredientId = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () => Navigator.of(ctx).pop(),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(
-                                fontFamily: 'Pixel Game',
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: selectedIngredientId != null
-                                ? () {
-                                    Navigator.of(ctx).pop();
-                                    _completeFenceTrade(
-                                        context, game, selectedIngredientId!);
-                                  }
-                                : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6B4423),
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text(
-                              'Trade',
-                              style: TextStyle(
-                                fontFamily: 'Pixel Game',
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _completeFenceTrade(
-      BuildContext context, GameState game, String receivedIngredientId) {
-    final error =
-        game.useFenceTrade(_selectedIngredients, receivedIngredientId);
-
-    if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
-      );
-    } else {
-      setState(() {
-        _selectedIngredients.clear();
-        _nextSelectionOrder = 1;
-      });
-      _showTradeSuccessDialog(
-        context,
-        'The Fence',
-        'You successfully traded 2 ingredients for ${ingredientById(receivedIngredientId)?.name ?? "an ingredient"}!',
-      );
+    final ingredientCounts = <String, int>{};
+    for (final ingredientId in _selectedIngredients.keys) {
+      ingredientCounts[ingredientId] = 1;
     }
-  }
 
-  void _useSmugglerTrade(BuildContext context, GameState game) {
-    if (!_canUseSmuggler) return;
-
-    final error = game.useSmugglerTrade(_selectedIngredients);
+    final error = game.tradeForStardust(ingredientCounts);
 
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
+        SnackBar(
+          content: Text(error),
+          backgroundColor: const Color(0xFFEF4444),
+        ),
       );
     } else {
       setState(() {
@@ -486,8 +322,8 @@ class _BlackMarketScreenState extends State<BlackMarketScreen> {
       });
       _showTradeSuccessDialog(
         context,
-        'The Smuggler',
-        'You successfully traded 3 different ingredients for 1 Stardust!\n\nThe shadows whisper their approval...',
+        'Trade Complete',
+        'You successfully traded 2 different ingredient types for 1 Stardust! \n\n Discard the two ingredients face down and claim your stardust.',
       );
     }
   }
@@ -516,9 +352,10 @@ class _BlackMarketScreenState extends State<BlackMarketScreen> {
                 children: [
                   Text(
                     title,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontFamily: 'JMH Cthulhumbus Arcade',
-                      fontSize: 24,
+                      fontSize: 30,
                       color: Color(0xFF4ADE80),
                     ),
                   ),
