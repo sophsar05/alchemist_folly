@@ -48,133 +48,147 @@ class _RoundStartScreenState extends State<RoundStartScreen> {
             ),
 
             // ----- MAIN CONTENT -----
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                // pushes everything down similar to Figma (around y ~ 130)
-                padding: const EdgeInsets.only(top: 170),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // COMMENCING ROUND
-                    const Text(
-                      'COMMENCING',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 55,
-                        height: 0.71,
-                        letterSpacing: -0.01,
-                        color: Color(0xFFFFF6E3),
-                        shadows: [
-                          Shadow(
-                            blurRadius: 11.57,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'ROUND',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 55,
-                        height: 0.71,
-                        letterSpacing: -0.01,
-                        color: Color(0xFFFFF6E3),
-                        shadows: [
-                          Shadow(
-                            blurRadius: 11.57,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 50),
-
-                    // ROUND NUMBER CIRCLE
-                    Container(
-                      width: 152,
-                      height: 152,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFFFF6E3),
-                        border: Border.all(
-                          color: const Color(0xFF351B10),
-                          width: 10.13,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${game.currentRound}',
-                        style: const TextStyle(
+            Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 170),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // COMMENCING ROUND
+                      const Text(
+                        'COMMENCING',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
                           fontFamily: 'Pixel Game',
-                          fontSize: 160,
+                          fontSize: 55,
                           height: 0.71,
                           letterSpacing: -0.01,
-                          color: Color(0xFF983333),
+                          color: Color(0xFFFFF6E3),
+                          shadows: [
+                            Shadow(
+                              blurRadius: 11.57,
+                              color: Colors.black,
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'ROUND',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Pixel Game',
+                          fontSize: 55,
+                          height: 0.71,
+                          letterSpacing: -0.01,
+                          color: Color(0xFFFFF6E3),
+                          shadows: [
+                            Shadow(
+                              blurRadius: 11.57,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                      ),
 
-                    const SizedBox(height: 40),
+                      const SizedBox(height: 50),
 
-                    // ROUND 1 INSTRUCTION (position & style like Figma)
-                    if (game.currentRound == 1)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        child: Text(
-                          'TAKE 3 CARDS FROM THE\nBOTTOM OF THE DECK OF\nALL COLORS EXCEPT\nYOUR OWN.',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontFamily: 'Pixel Game',
-                            fontSize: 32,
-                            height: 0.9,
-                            letterSpacing: -0.01,
-                            color: Color(0xFFFFF6E3),
-                            shadows: [
-                              Shadow(
-                                blurRadius: 29.5,
-                                color: Colors.black,
+                      // ROUND NUMBER CIRCLE
+                      SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFFFFF6E3)
+                                    .withValues(alpha: 0.96),
+                                border: Border.all(
+                                  color: const Color(0xFF351B10),
+                                  width: 4,
+                                ),
                               ),
-                              Shadow(
-                                blurRadius: 29.5,
-                                color: Colors.black,
+                            ),
+                            Center(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '${game.currentRound}',
+                                  maxLines: 1,
+                                  style: const TextStyle(
+                                    fontFamily: 'Pixel Game',
+                                    fontSize: 100,
+                                    height: 1.0,
+                                    color: Color(0xFF983333),
+                                  ),
+                                ),
                               ),
-                              Shadow(
-                                blurRadius: 29.5,
-                                color: Colors.black,
-                              ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // ROUND 1 INSTRUCTION
+                      if (game.currentRound == 1)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            'TAKE 3 CARDS FROM THE\nBOTTOM OF THE DECK OF\nALL COLORS EXCEPT\nYOUR OWN.',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'Pixel Game',
+                              fontSize: 32,
+                              height: 0.9,
+                              letterSpacing: -0.01,
+                              color: Color(0xFFFFF6E3),
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 29.5,
+                                  color: Colors.black,
+                                ),
+                                Shadow(
+                                  blurRadius: 29.5,
+                                  color: Colors.black,
+                                ),
+                                Shadow(
+                                  blurRadius: 29.5,
+                                  color: Colors.black,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
+
+                      const SizedBox(height: 40),
+
+                      // DONE BUTTON
+                      SizedBox(
+                        width: 122,
+                        height: 45,
+                        child: PrimaryButton(
+                          label: 'Done',
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              MarketAnnouncementScreen.routeName,
+                            );
+                          },
+                        ),
                       ),
 
-                    const SizedBox(height: 40),
+                      const SizedBox(height: 40),
 
-                    // DONE BUTTON
-                    SizedBox(
-                      width: 122,
-                      height: 45,
-                      child: PrimaryButton(
-                        label: 'Done',
-                        onPressed: () {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            MarketAnnouncementScreen.routeName,
-                          );
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // LOGO NEAR BOTTOM
-                    const AlchemistsFollyLogo(),
-                  ],
+                      // LOGO NEAR BOTTOM
+                      const AlchemistsFollyLogo(),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -184,3 +198,4 @@ class _RoundStartScreenState extends State<RoundStartScreen> {
     );
   }
 }
+

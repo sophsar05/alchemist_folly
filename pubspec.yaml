@@ -28,6 +28,7 @@ flutter:
     # Backgrounds (adjust names to match your actual files)
     - assets/images/bg_default.png
     - assets/images/bg_cauldron.png
+    - assets/images/bg_empty_cauldron.png
     - assets/images/bg_potionlist.png
     - assets/images/bg_library.png
     - assets/images/bg_market.png

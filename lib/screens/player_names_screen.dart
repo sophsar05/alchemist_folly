@@ -76,84 +76,84 @@ class _PlayerNamesScreenState extends State<PlayerNamesScreen> {
 
     return BackgroundScaffold(
       backgroundAsset: 'assets/images/bg_default.png',
+      resizeToAvoidBottomInset: false,
       child: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-            children: [
-              const SizedBox(height: 150),
+              child: SingleChildScrollView(
+                child: Column(
+              children: [
+                const SizedBox(height: 150),
 
-              // TITLE
-              const Text(
-                'PLEASE ENTER \nPLAYER NAMES:',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Pixel Game',
-                  fontSize: 42,
-                  height: 0.71,
-                  letterSpacing: -0.01,
-                  color: Color(0xFFFFF6E3),
-                  shadows: [
-                    Shadow(
-                      blurRadius: 8.9,
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 42),
-
-              // NAME FIELDS
-              Flexible(
-              fit: FlexFit.loose,
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _playerCount,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        _PlayerIconBubble(color: iconColors[index]),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _NameScrollField(
-                            playerIndex: index,
-                            controller: _controllers[index],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-              const SizedBox(height: 42),
-
-              Center(
-                child: SizedBox(
-                  width: 140,
-                  height: 45,
-                  child: PrimaryButton(
-                    label: 'PROCEED',
-                    onPressed: _startGame,
+                // TITLE
+                const Text(
+                  'PLEASE ENTER \nPLAYER NAMES:',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Pixel Game',
+                    fontSize: 42,
+                    height: 0.71,
+                    letterSpacing: -0.01,
+                    color: Color(0xFFFFF6E3),
+                    shadows: [
+                      Shadow(
+                        blurRadius: 8.9,
+                        color: Colors.black,
+                      ),
+                    ],
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 50),
-              const AlchemistsFollyLogo(),
-              const SizedBox(height: 24),
-            ],
+                const SizedBox(height: 42),
+
+                // NAME FIELDS
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _playerCount,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          _PlayerIconBubble(color: iconColors[index]),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _NameScrollField(
+                              playerIndex: index,
+                              controller: _controllers[index],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 42),
+
+                Center(
+                  child: SizedBox(
+                    width: 140,
+                    height: 45,
+                    child: PrimaryButton(
+                      label: 'PROCEED',
+                      onPressed: _startGame,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 50),
+                const AlchemistsFollyLogo(),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
-      ),
-      ),
+        ),
+        ),
       ),
     );
   }

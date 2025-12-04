@@ -54,226 +54,233 @@ class _GameMasterScreenState extends State<GameMasterScreen> {
         child: Stack(
           children: [
             // MAIN LAYOUT
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 12),
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 12),
 
-                    // ROUND LABEL
-                    const Text(
-                      'ROUND',
-                      style: TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 60,
-                        height: 0.71,
-                        color: Color(0xFFFFF6E3),
-                        letterSpacing: -0.01,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 8.9,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    // ROUND NUMBER CIRCLE
-                    Container(
-                      width: 54,
-                      height: 54,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFFFF6E3).withValues(alpha: 0.96),
-                        border: Border.all(
-                          color: const Color(0xFF351B10),
-                          width: 4,
+                  // ROUND LABEL
+                  const Text(
+                    'ROUND',
+                    style: TextStyle(
+                      fontFamily: 'Pixel Game',
+                      fontSize: 60,
+                      height: 0.71,
+                      color: Color(0xFFFFF6E3),
+                      letterSpacing: -0.01,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 8.9,
+                          color: Colors.black,
                         ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${game.currentRound}',
-                        style: TextStyle(
-                          fontFamily: 'Pixel Game',
-                          fontSize: 55,
-                          height: 0.71,
-                          color:
-                              nameColor, // 🔥 color changes based on player index
-                        ),
-                      ),
+                      ],
                     ),
+                  ),
 
-                    const SizedBox(height: 16),
+                  const SizedBox(height: 6),
 
-                    // PLAYER NAME TURN – colored by player
-                    Stack(
+                  // ROUND NUMBER CIRCLE
+                  SizedBox(
+                    width: 54,
+                    height: 54,
+                    child: Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        // OUTLINE — black, drawn 4 times around the text
-                        for (final offset in [
-                          const Offset(-2, -2),
-                          const Offset(2, -2),
-                          const Offset(-2, 2),
-                          const Offset(2, 2),
-                        ])
-                          Positioned(
-                            left: offset.dx,
-                            top: offset.dy,
-                            child: Text(
-                              "${player.name.toUpperCase()}'S TURN",
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: 'Pixel Game',
-                                fontSize: 32,
-                                height: 0.71,
-                                color: Colors.black, // outline color
-                                letterSpacing: -0.01,
-                              ),
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color:
+                                const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                            border: Border.all(
+                              color: const Color(0xFF351B10),
+                              width: 4,
                             ),
                           ),
-
-                        // MAIN TEXT — uses player color
-                        Text(
-                          "${player.name.toUpperCase()}'S TURN",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Pixel Game',
-                            fontSize: 32,
-                            height: 0.71,
-                            color: nameColor, // center colored text
-                            letterSpacing: -0.01,
+                        ),
+                        Center(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              '${game.currentRound}',
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontFamily: 'Pixel Game',
+                                fontSize: 55,
+                                height: 1.0,
+                                color: nameColor,
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
+                  ),
 
-                    const SizedBox(height: 4),
+                  const SizedBox(height: 16),
 
-                    // UNDERLINE
-                    Container(
-                      width: 190,
-                      height: 4,
-                      color: const Color(0xFF351B10),
-                    ),
-
-                    const SizedBox(height: 4),
-
-                    // POINTS LABEL (kept white for readability)
-                    const SizedBox(height: 4),
-                    Text(
-                      'POINTS: ${player.prestige}'
-                      '${player.stardust > 0 ? ' | STARDUST: ${player.stardust}' : ''}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontFamily: 'Pixel Game',
-                        fontSize: 24,
-                        height: 0.71,
-                        color: Color(0xFFFFF6E3),
-                        letterSpacing: -0.01,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 8.9,
-                            color: Colors.black,
+                  // PLAYER NAME TURN
+                  Stack(
+                    children: [
+                      // OUTLINE
+                      for (final offset in [
+                        const Offset(-2, -2),
+                        const Offset(2, -2),
+                        const Offset(-2, 2),
+                        const Offset(2, 2),
+                      ])
+                        Positioned(
+                          left: offset.dx,
+                          top: offset.dy,
+                          child: Text(
+                            "${player.name.toUpperCase()}'S TURN",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontFamily: 'Pixel Game',
+                              fontSize: 32,
+                              height: 0.71,
+                              color: Colors.black,
+                              letterSpacing: -0.01,
+                            ),
                           ),
-                        ],
+                        ),
+
+                      // MAIN TEXT
+                      Text(
+                        "${player.name.toUpperCase()}'S TURN",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Pixel Game',
+                          fontSize: 32,
+                          height: 0.71,
+                          color: nameColor,
+                          letterSpacing: -0.01,
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
 
-                    const SizedBox(height: 40),
+                  const SizedBox(height: 4),
 
-                    // BIG SCROLL BUTTONS
-                    _MenuScrollButton(
-                      label: 'Potion List',
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          PotionListScreen.routeName,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _MenuScrollButton(
-                      label: 'Brew',
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          BrewScreen.routeName,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _MenuScrollButton(
-                      label: 'Library',
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          LibraryHintScreen.routeName,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _MenuScrollButton(
-                      label: 'Market',
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          MarketScreen.routeName,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _BlackMarketButton(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          BlackMarketScreen.routeName,
-                        );
-                      },
-                    ),
+                  // UNDERLINE
+                  Container(
+                    width: 190,
+                    height: 4,
+                    color: const Color(0xFF351B10),
+                  ),
 
-                    const SizedBox(height: 14),
+                  const SizedBox(height: 4),
 
-                    // END TURN / END GAME (smaller scroll-style)
-                    SizedBox(
-                      width: 180,
-                      child: PrimaryButton(
-                        label:
-                            game.isGameOverByPoints ? 'End Game' : 'End Turn',
-                        onPressed: () {
-                          if (game.isGameOverByPoints) {
-                            Navigator.pushNamedAndRemoveUntil(
+                  // POINTS LABEL
+                  const SizedBox(height: 4),
+                  Text(
+                    'POINTS: ${player.prestige}'
+                    '${player.stardust > 0 ? ' | STARDUST: ${player.stardust}' : ''}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: 'Pixel Game',
+                      fontSize: 24,
+                      height: 0.71,
+                      color: Color(0xFFFFF6E3),
+                      letterSpacing: -0.01,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 8.9,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // BIG SCROLL BUTTONS
+                  _MenuScrollButton(
+                    label: 'Potion List',
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        PotionListScreen.routeName,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _MenuScrollButton(
+                    label: 'Brew',
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        BrewScreen.routeName,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _MenuScrollButton(
+                    label: 'Library',
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        LibraryHintScreen.routeName,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _MenuScrollButton(
+                    label: 'Market',
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        MarketScreen.routeName,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _BlackMarketButton(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        BlackMarketScreen.routeName,
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // END TURN / END GAME
+                  SizedBox(
+                    width: 180,
+                    child: PrimaryButton(
+                      label: game.isGameOverByPoints ? 'End Game' : 'End Turn',
+                      onPressed: () {
+                        if (game.isGameOverByPoints) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/end-game-flow',
+                            (route) => false,
+                          );
+                        } else {
+                          final startedNewRound =
+                              context.read<GameState>().nextTurn();
+
+                          if (startedNewRound) {
+                            Navigator.pushReplacementNamed(
                               context,
-                              '/end-game-flow',
-                              (route) => false,
+                              RoundStartScreen.routeName,
                             );
-                          } else {
-                            final startedNewRound =
-                                context.read<GameState>().nextTurn();
-
-                            if (startedNewRound) {
-                              Navigator.pushReplacementNamed(
-                                context,
-                                RoundStartScreen.routeName,
-                              );
-                            }
                           }
-                        },
-                      ),
+                        }
+                      },
                     ),
+                  ),
 
-                    const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                    // LOGO
-                    const AlchemistsFollyLogo(),
+                  // LOGO
+                  const AlchemistsFollyLogo(),
 
-                    const SizedBox(height: 8),
-                  ],
-                ),
+                  const SizedBox(height: 8),
+                ],
               ),
             ),
 

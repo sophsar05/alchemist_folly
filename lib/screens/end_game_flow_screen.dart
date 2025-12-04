@@ -117,7 +117,13 @@ class _EndGameFlowScreenState extends State<EndGameFlowScreen> {
 
   Widget _buildScoreboardPage() {
     final game = context.watch<GameState>();
-    final standings = game.standings;
+    final players = game.players;
+
+    // find highest prestige to highlight winner
+    final highestPrestige = players.fold(
+      0,
+      (max, player) => player.prestige > max ? player.prestige : max,
+    );
 
     // Player colors
     const iconColors = [
@@ -178,30 +184,30 @@ class _EndGameFlowScreenState extends State<EndGameFlowScreen> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    ...standings.asMap().entries.map((entry) {
+                    ...players.asMap().entries.map((entry) {
                       final index = entry.key;
                       final player = entry.value;
-                      final originalPlayerIndex =
-                          game.players.indexWhere((p) => p.id == player.id);
-                      final playerColor = (originalPlayerIndex >= 0 &&
-                              originalPlayerIndex < iconColors.length)
-                          ? iconColors[originalPlayerIndex]
+                      final isWinner = player.prestige == highestPrestige;
+                      final playerColor = (index < iconColors.length)
+                          ? iconColors[index]
                           : const Color(0xFF351B10);
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
                           children: [
-                            // rank number
+                            // player number
                             SizedBox(
                               width: 28,
                               child: Text(
                                 '${index + 1}.',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Pixel Game',
                                   fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF351B10),
+                                  fontWeight: isWinner
+                                      ? FontWeight.bold
+                                      : FontWeight.bold,
+                                  color: const Color(0xFF351B10),
                                 ),
                               ),
                             ),
@@ -231,10 +237,10 @@ class _EndGameFlowScreenState extends State<EndGameFlowScreen> {
                                 style: TextStyle(
                                   fontFamily: 'Pixel Game',
                                   fontSize: 16,
-                                  fontWeight: index == 0
+                                  fontWeight: isWinner
                                       ? FontWeight.bold
                                       : FontWeight.normal,
-                                  color: index == 0
+                                  color: isWinner
                                       ? const Color(0xFF8B4513)
                                       : const Color(0xFF351B10),
                                 ),
@@ -247,10 +253,10 @@ class _EndGameFlowScreenState extends State<EndGameFlowScreen> {
                               style: TextStyle(
                                 fontFamily: 'Pixel Game',
                                 fontSize: 16,
-                                fontWeight: index == 0
+                                fontWeight: isWinner
                                     ? FontWeight.bold
                                     : FontWeight.normal,
-                                color: index == 0
+                                color: isWinner
                                     ? const Color(0xFF8B4513)
                                     : const Color(0xFF351B10),
                               ),

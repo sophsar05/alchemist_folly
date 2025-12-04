@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/game_state.dart';
-import '../widgets/alchemists_folly_logo.dart';
 import 'player_count_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
@@ -15,51 +14,34 @@ class MainMenuScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background image – your forest art
           Image.asset(
             'assets/images/bg_default.png',
             fit: BoxFit.cover,
           ),
-
-          // Positioned elements
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final height = constraints.maxHeight;
-
-              final titleTop = height * (200 / 852);
-              final quoteTop = height * (404 / 852);
-              final buttonTop = height * (543 / 852);
-
-              return Stack(
-                children: [
-                Positioned(
-                  top: titleTop,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      width: 380,          // tweak as needed to match your desired size
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-
-
-                  // Quote text
-                  Positioned(
-                    top: quoteTop,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: SizedBox(
-                        width: 265,
-                        child: Text(
-                          '"CUTE QUOTE OR\nSPIEL OR SMTH SO ITS\nNOT SO EMPTY"',
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/logo.png',
+                        width: 380,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(height: 60),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 750),
+                        child: const Text(
+                          'Brew. Sabotage. Survive. \n\n  The ingredients are gathered, and the Prism is waiting. Only one of you will claim the title of Master Alchemist. \n\n Let the mixing begin!',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Pixel Game',
-                            fontSize: 36,
+                            fontSize: 25,
                             height: 0.71,
                             letterSpacing: -0.36,
                             color: Color(0xFFFFF6E3),
@@ -73,16 +55,8 @@ class MainMenuScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-                  ),
-
-                  // START A GAME Button
-                  Positioned(
-                    top: buttonTop,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: GestureDetector(
+                      const SizedBox(height: 50),
+                      GestureDetector(
                         onTap: () {
                           context.read<GameState>().reset();
                           Navigator.pushNamed(
@@ -120,11 +94,11 @@ class MainMenuScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              );
-            },
+                ),
+              ),
+            ),
           ),
         ],
       ),
