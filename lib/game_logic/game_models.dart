@@ -99,6 +99,7 @@ class BrewResult {
   final bool isSecretPotion;
   final bool triggeredFolly;
   final int apSpent;
+  final bool isRepeat;
 
   const BrewResult({
     required this.success,
@@ -110,6 +111,7 @@ class BrewResult {
     required this.isSecretPotion,
     required this.triggeredFolly,
     required this.apSpent,
+    this.isRepeat = false,
   });
 }
 

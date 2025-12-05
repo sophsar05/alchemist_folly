@@ -310,6 +310,7 @@ class GameState extends ChangeNotifier {
     int bonus = 0;
     bool isSecret = false;
     bool follyPenalty = false;
+    bool isRepeat = false;
     String message = '';
 
     // ------------------------------------------------------------------
@@ -343,6 +344,7 @@ class GameState extends ChangeNotifier {
         message =
             'This potion has already been brewed by another alchemist! You gain nothing from duplicating their work.';
         base = -2;
+        isRepeat = true;
         potion = null;
 
         if (_currentMarketEvent.type == MarketEventType.folly &&
@@ -444,6 +446,7 @@ class GameState extends ChangeNotifier {
       isSecretPotion: isSecret,
       triggeredFolly: follyPenalty,
       apSpent: 2,
+      isRepeat: isRepeat,
     );
   }
 

@@ -48,6 +48,7 @@ class BrewResultScreen extends StatelessWidget {
     final hasBonus = (result.bonusPoints ?? 0) > 0;
     final hasPenalty = (result.bonusPoints ?? 0) < 0;
     final isFailed = result.basePoints <= 0;
+    final isRepeat = result.isRepeat;
 
     // Colors from your Figma
     const cream = Color(0xFFFFF6E3);
@@ -144,27 +145,58 @@ class BrewResultScreen extends StatelessWidget {
                           )
                         : Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24),
-                            child: Text(
-                              _failMessages[
-                                  currentRound % _failMessages.length],
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontFamily: 'Pixel Game',
-                                fontSize: 30,
-                                height: 1.1,
-                                letterSpacing: -0.01,
-                                color: Color(0xFFEF4444),
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 8.0,
-                                    color: Colors.black,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  isRepeat
+                                      ? 'POTION ALREADY BREWED'
+                                      : _failMessages[
+                                          currentRound % _failMessages.length],
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontFamily: 'Pixel Game',
+                                    fontSize: 30,
+                                    height: 1.1,
+                                    letterSpacing: -0.01,
+                                    color: Color(0xFFEF4444),
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 8.0,
+                                        color: Colors.black,
+                                      ),
+                                      Shadow(
+                                        blurRadius: 8.0,
+                                        color: Colors.black,
+                                      ),
+                                    ],
                                   ),
-                                  Shadow(
-                                    blurRadius: 8.0,
-                                    color: Colors.black,
+                                ),
+                                if (isRepeat) ...[
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Another alchemist beat you to it!',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontFamily: 'Pixel Game',
+                                      fontSize: 20,
+                                      height: 1.1,
+                                      letterSpacing: -0.01,
+                                      color: Color(0xFFFFDB8D),
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 8.0,
+                                          color: Colors.black,
+                                        ),
+                                        Shadow(
+                                          blurRadius: 8.0,
+                                          color: Colors.black,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
-                              ),
+                              ],
                             ),
                           ),
 

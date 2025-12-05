@@ -47,11 +47,12 @@ class _BrewScreenState extends State<BrewScreen> {
     'Forest Blood'
   ];
 
-  bool get _canBrew =>
+  bool _canBrew(GameState game) =>
       _herbIndex != null &&
       _mineralIndex != null &&
       _creatureIndex != null &&
-      _essenceIndex != null;
+      _essenceIndex != null &&
+      (!_useStardust || game.currentPlayer.stardust >= 1);
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +121,8 @@ class _BrewScreenState extends State<BrewScreen> {
                             width: 33,
                             height: 33,
                             decoration: BoxDecoration(
-                              color:
-                                  const Color(0xFFFFF6E3).withValues(alpha: 0.96),
+                              color: const Color(0xFFFFF6E3)
+                                  .withValues(alpha: 0.96),
                               shape: BoxShape.circle,
                               border: Border.all(
                                 color: const Color(0xFF351B10),
@@ -285,12 +286,12 @@ class _BrewScreenState extends State<BrewScreen> {
                               width: 122,
                               height: 45,
                               child: GestureDetector(
-                                onTap: _canBrew
+                                onTap: _canBrew(game)
                                     ? () => _onBrewPressed(context, game)
                                     : null,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: _canBrew
+                                    color: _canBrew(game)
                                         ? const Color(0xFFFFA35B)
                                         : const Color(0xFFCCCCCC),
                                     borderRadius: BorderRadius.circular(11.6),
@@ -306,7 +307,7 @@ class _BrewScreenState extends State<BrewScreen> {
                                       fontFamily: 'JMH Cthulhumbus Arcade',
                                       fontSize: 21.7,
                                       height: 0.79,
-                                      color: _canBrew
+                                      color: _canBrew(game)
                                           ? const Color(0xFF351B10)
                                           : const Color(0xFF8C8C8C),
                                     ),
@@ -349,7 +350,7 @@ class _BrewScreenState extends State<BrewScreen> {
   }
 
   void _onBrewPressed(BuildContext context, GameState game) {
-    if (!_canBrew) return;
+    if (!_canBrew(game)) return;
 
     final result = game.brew(
       herbName: herbs[_herbIndex!],
