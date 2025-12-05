@@ -15,10 +15,9 @@ class PotionListScreen extends StatefulWidget {
   State<PotionListScreen> createState() => _PotionListScreenState();
 }
 
-
 class _PotionListScreenState extends State<PotionListScreen> {
   final TextEditingController _searchController = TextEditingController();
-  
+
   String _searchText = '';
   Potion? _selectedPotion; // for overlay
 
@@ -32,7 +31,7 @@ class _PotionListScreenState extends State<PotionListScreen> {
     switch (category) {
       case IngredientCategory.herb: // Obsidian Caves – lavender/purple
         return const Color(0xFF009EBA);
-      case IngredientCategory.mineral: // Azure Forest – blue 
+      case IngredientCategory.mineral: // Azure Forest – blue
         return const Color(0xFFFFC037);
       case IngredientCategory.creature: //  Sunstone Mine – orange/yellow
         return const Color(0xFF8E5CF4);
@@ -41,17 +40,14 @@ class _PotionListScreenState extends State<PotionListScreen> {
     }
   }
 
-    List<Potion> _filteredPotions(GameState game) {
+  List<Potion> _filteredPotions(GameState game) {
     // Take the whole search string, lowercase it
     final raw = _searchText.toLowerCase();
 
     // Split by comma so user can search multiple things:
     // e.g. "dragon, frost, invis"
-    final terms = raw
-        .split(',')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
+    final terms =
+        raw.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
 
     // If nothing meaningful was typed, show all potions
     if (terms.isEmpty) return kPotions;
@@ -491,183 +487,191 @@ class _PotionDetailOverlay extends StatelessWidget {
     final creature = ingredientById(potion.creatureId);
     final essence = ingredientById(potion.essenceId);
 
-    return Positioned.fill(
-      child: GestureDetector(
-        onTap: onClose,
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: 300,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFDB8D),
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(
+            color: const Color(0xFFFFDB8D),
+            width: 12,
+          ),
+        ),
         child: Container(
-          color: Colors.black54,
-          alignment: Alignment.center,
-          child: GestureDetector(
-            onTap: () {}, // absorb taps so card itself doesn't close
-            child: Container(
-              width: 300,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFDB8D),
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(
-                  color: const Color(0xFFFFDB8D),
-                  width: 12,
-                ),
-              ),
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF6E3),
-                  borderRadius: BorderRadius.circular(26),
-                  border: Border.all(
-                    color: const Color(0xFF351B10),
-                    width: 4,
-                  ),
-                ),
-                child: Stack(
-                  clipBehavior: Clip.none,
+          margin: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF6E3),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(
+              color: const Color(0xFF351B10),
+              width: 4,
+            ),
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // main content
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 40, 20, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // main content
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 40, 20, 24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // title
-                          Text(
-                            potion.name,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontFamily: 'JMH Cthulhumbus Arcade',
-                              fontSize: 26,
-                              height: 1.1,
-                              color: Color(0xFF351B10),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // image square
-                          Container(
-                            height: 130,
-                            width: 160,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFA5DCE5),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: const Color(0xFF351B10),
-                                width: 4,
-                              ),
-                            ),
-                            alignment: Alignment.center,
-                            child: SizedBox(
-                              width: 110,
-                              height: 110,
-                              child: Image.asset(
-                                _potionAsset(potion),
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 18),
-
-                          // HOW TO MAKE
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'HOW TO MAKE:',
-                                style: TextStyle(
-                                  fontFamily: 'Pixel Game',
-                                  fontSize: 16,
-                                  height: 1.0,
-                                  color: Color(0xFF351B10),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Container(
-                                height: 2,
-                                width: 83,
-                                color: const Color(0xFF351B10),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          // four rows always (if some null, we just skip icons)
-                          if (creature != null)
-                            _IngredientDetailRow(
-                              ingredient: creature,
-                              colorForCategory: colorForCategory,
-                            ),
-                          if (mineral != null)
-                            _IngredientDetailRow(
-                              ingredient: mineral,
-                              colorForCategory: colorForCategory,
-                            ),
-                          if (herb != null)
-                            _IngredientDetailRow(
-                              ingredient: herb,
-                              colorForCategory: colorForCategory,
-                            ),
-                          if (essence != null)
-                            _IngredientDetailRow(
-                              ingredient: essence,
-                              colorForCategory: colorForCategory,
-                            ),
-                        ],
+                    // title
+                    Text(
+                      potion.name,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'JMH Cthulhumbus Arcade',
+                        fontSize: 26,
+                        height: 1.1,
+                        color: Color(0xFF351B10),
                       ),
                     ),
+                    const SizedBox(height: 16),
 
-                    // +PP badge on top
-                    Positioned(
-                      top: -10,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 13, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFFFFF),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: const Color(0xFF351B10),
-                              width: 3,
-                            ),
-                            boxShadow: const [
-                              BoxShadow(
-                                blurRadius: 4,
-                                color: Colors.black26,
+                    // image square
+                    Container(
+                      height: 130,
+                      width: 160,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFA5DCE5),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: const Color(0xFF351B10),
+                          width: 4,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: 110,
+                        height: 110,
+                        child: Image.asset(
+                          _potionAsset(potion),
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            debugPrint('❌ Failed to load potion image!');
+                            debugPrint('Path: ${_potionAsset(potion)}');
+                            debugPrint('Error: $error');
+                            return Container(
+                              color: Colors.red.withOpacity(0.3),
+                              child: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.error,
+                                      size: 40, color: Colors.red),
+                                  Text('Image failed',
+                                      style: TextStyle(color: Colors.red)),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: Text(
-                            '+${potion.points} PP',
-                            style: const TextStyle(
-                              fontFamily: 'Pixel Game',
-                              fontSize: 35,
-                              height: 1.0,
-                              color: Color(0xFFFE7305),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ),
                     ),
 
-                    // small close "X"
-                    Positioned(
-                      right: 10,
-                      top: 8,
-                      child: GestureDetector(
-                        onTap: onClose,
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                          color: Color(0xFF351B10),
+                    const SizedBox(height: 18),
+
+                    // HOW TO MAKE
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'HOW TO MAKE:',
+                          style: TextStyle(
+                            fontFamily: 'Pixel Game',
+                            fontSize: 16,
+                            height: 1.0,
+                            color: Color(0xFF351B10),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 2),
+                        Container(
+                          height: 2,
+                          width: 83,
+                          color: const Color(0xFF351B10),
+                        ),
+                      ],
                     ),
+
+                    const SizedBox(height: 10),
+
+                    // four rows always (if some null, we just skip icons)
+                    if (creature != null)
+                      _IngredientDetailRow(
+                        ingredient: creature,
+                        colorForCategory: colorForCategory,
+                      ),
+                    if (mineral != null)
+                      _IngredientDetailRow(
+                        ingredient: mineral,
+                        colorForCategory: colorForCategory,
+                      ),
+                    if (herb != null)
+                      _IngredientDetailRow(
+                        ingredient: herb,
+                        colorForCategory: colorForCategory,
+                      ),
+                    if (essence != null)
+                      _IngredientDetailRow(
+                        ingredient: essence,
+                        colorForCategory: colorForCategory,
+                      ),
                   ],
                 ),
               ),
-            ),
+
+              // +PP badge on top
+              Positioned(
+                top: -10,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 13, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFFFF),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: const Color(0xFF351B10),
+                        width: 3,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          blurRadius: 4,
+                          color: Colors.black26,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      '+${potion.points} PP',
+                      style: const TextStyle(
+                        fontFamily: 'Pixel Game',
+                        fontSize: 35,
+                        height: 1.0,
+                        color: Color(0xFFFE7305),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // small close "X"
+              Positioned(
+                right: 10,
+                top: 8,
+                child: GestureDetector(
+                  onTap: onClose,
+                  child: const Icon(
+                    Icons.close,
+                    size: 20,
+                    color: Color(0xFF351B10),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -730,4 +734,3 @@ class _IngredientDetailRow extends StatelessWidget {
 String _potionAsset(Potion potion) {
   return 'assets/images/potions/${potion.id}.png';
 }
-
